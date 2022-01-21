@@ -1,0 +1,26 @@
+version: '3.1'
+
+services:
+  db:
+    image: postgres:14
+    environment:
+      POSTGRES_PASSWORD: postgres
+      PGDATA: /data
+    volumes:
+      - "/data/pg_data:/data"
+    ports:
+      - "5432:5432"
+    expose:
+      - "5432"
+#    restart: always
+    container_name: db
+
+  redis:
+    image: redis:6
+#    restart: always
+    expose:
+      - "6379"
+    ports:
+      - "6379:6379"
+    container_name: redis
+
