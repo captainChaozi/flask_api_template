@@ -48,7 +48,6 @@ class Config:
     SQLALCHEMY_DATABASE_URI = os.getenv('DB_URL') or con_str.format(**data)
     print(SQLALCHEMY_DATABASE_URI)
     SQLALCHEMY_ECHO = False
-    SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # redis 配置

@@ -1,5 +1,7 @@
-import six, sqlalchemy as sa, datetime, uuid
+import six, datetime, uuid
 from sqlalchemy.orm import object_mapper
+from sqlalchemy import String, DateTime, Column, Integer
+from sqlalchemy.dialects.postgresql import JSONB
 from flask import g
 
 
@@ -133,24 +135,25 @@ def get_user_name():
 
 
 class TimestampMixin(object):
-    create_time = sa.Column(sa.DateTime, default=datetime.datetime.now)
-    modify_time = sa.Column(sa.DateTime, onupdate=datetime.datetime.now, default=datetime.datetime.now)
+    create_time = Column(DateTime, default=datetime.datetime.now)
+    modify_time = Column(DateTime, onupdate=datetime.datetime.now, default=datetime.datetime.now)
 
 
 class DataPermissionMixin(object):
-    user_id = sa.Column(sa.String(50), nullable=True, default=get_user)
-    group_id = sa.Column(sa.String(50), default=get_group)
-    tenant_id = sa.Column(sa.String(50), default=get_tenant)
-    create_user = sa.Column(sa.String(50), default=get_user_name)
-    create_group = sa.Column(sa.String(50), default=get_group_name)
+    user_id = Column(String(50), nullable=True, default=get_user)
+    group_id = Column(String(50), default=get_group)
+    tenant_id = Column(String(50), default=get_tenant)
+    create_user = Column(String(50), default=get_user_name)
+    create_group = Column(String(50), default=get_group_name)
 
 
 class SoftDeleteMixin(object):
-    is_delete = sa.Column(sa.Integer, default=0)
+    is_delete = Column(Integer, default=0)
 
 
 class IdMixin(object):
-    id = sa.Column(sa.String(50), primary_key=True, unique=True, default=uuid.uuid4().hex)
+    id = Column(String(50), primary_key=True, unique=True, default=uuid.uuid4().hex)
+    extend = Column(JSONB, default=dict())
 
 
 class MainMixIn(IdMixin, TimestampMixin, SoftDeleteMixin):

@@ -1,5 +1,5 @@
 from flask import Flask
-from app.ext_init import db, docs, ma, cors, migrate,get_session
+from app.ext_init import db, docs, ma, cors, migrate, get_session
 from config import Config
 from .model import Author, Book
 
@@ -21,4 +21,3 @@ app = create_app()
 @app.shell_context_processor
 def make_shell_context():
     return dict(db_session=get_session())
-
