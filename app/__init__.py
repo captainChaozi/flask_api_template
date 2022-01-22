@@ -1,7 +1,8 @@
-from flask import Flask
+from flask import Flask, g
 from app.ext_init import db, docs, ma, cors, migrate, get_session
 from config import Config
 from .model import Author, Book
+from .resource import register_resource
 
 
 def create_app():
@@ -16,6 +17,16 @@ def create_app():
 
 
 app = create_app()
+
+with app.app_context():
+    with app.test_request_context():
+        g.db_session = get_session()
+        register_resource(app,docs)
+
+
+@app.before_request
+def create_session():
+    g.db_session = get_session()
 
 
 @app.shell_context_processor

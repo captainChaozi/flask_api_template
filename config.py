@@ -1,18 +1,33 @@
 import os
-from datetime import timedelta
+from datetime import timedelta, datetime, date
+from json import JSONEncoder
+from decimal import Decimal
 
 from apispec import APISpec
 from apispec.ext.marshmallow import MarshmallowPlugin
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
+class CJsonEncoder(JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, datetime):
+            return obj.strftime('%Y-%m-%d %H:%M:%S')
+        elif isinstance(obj, date):
+            return obj.strftime('%Y-%m-%d')
+        elif isinstance(obj, Decimal):
+            return float(obj)
+        else:
+            return JSONEncoder.default(self, obj)
+
 
 class Config:
     # flask配置
     SECRET_KEY = os.getenv('SECRET_KEY', os.urandom(24))
 
+    RESTFUL_JSON = {'cls':CJsonEncoder}
+
     # 文档配置
-    APISPEC_SPEC=APISpec(title=os.getenv('APP_NAME','api'),version='v1',openapi_version='3.0.0',plugins=[MarshmallowPlugin()])
+    APISPEC_SPEC=APISpec(title=os.getenv('APP_NAME','resource'),version='v1',openapi_version='3.0.0',plugins=[MarshmallowPlugin()])
 
     APISPEC_SWAGGER_URL='/swagger/'
 
