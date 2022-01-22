@@ -1,11 +1,7 @@
 from flask import g, request, current_app
 from sqlalchemy import or_
-from marshmallow import fields
-from flask_apispec.views import MethodResource
-from flask_apispec import use_kwargs, marshal_with
-
+from flask.views import MethodView
 from ext.base_schema import MainSchema, ExportSchema
-
 from .api_utils import abort, param_query, paginator, soft_delete, real_delete
 
 
@@ -94,7 +90,7 @@ class BaseService(object):
         return resource
 
 
-class BaseResource(MethodResource):
+class BaseResource(MethodView):
     def __init__(self, data=None, param=None):
         self.db_session = g.db_session
         if param:

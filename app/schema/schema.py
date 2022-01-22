@@ -1,6 +1,7 @@
 from app import Author, Book
 from ext import MainSchema, MetaBase
-from marshmallow import fields,Schema
+from marshmallow import fields, Schema
+
 
 class PagingSchema(Schema):
     page = fields.Integer()
@@ -8,13 +9,13 @@ class PagingSchema(Schema):
     total_number = fields.Integer()
 
 
-
 class AuthorSchema(MainSchema):
     class Meta(MetaBase):
         model = Author
 
+
 class AuthorGetSchema(Schema):
-    data = fields.Nested(AuthorSchema,many=True)
+    data = fields.Nested(AuthorSchema, many=True)
     paging = fields.Nested(PagingSchema)
 
 

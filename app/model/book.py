@@ -11,3 +11,8 @@ class Book(db.Model, MainMixIn):
     name = db.Column(db.String(50))
     author_id = db.Column(db.ForeignKey('author.id'))
     author = db.relationship('Author', backref = db.backref('books'))
+
+class Pet(db.Model,MainMixIn):
+    name = db.Column(db.String(50))
+    category = db.Column(db.Integer)
+    size = db.Column(db.String(20))
