@@ -52,31 +52,21 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # redis 配置
-    REDIS_HOST = os.getenv('REDIS_HOST', 'localhost')
+    REDIS_HOST = os.getenv('REDIS_HOST', '127.0.0.1')
     REDIS_PORT = os.getenv('REDIS_PORT', '6379')
     REDIS_DB = os.getenv('REDIS_DB', 0)
-    _redis_url = "redis://:{host}:{port}/{db}". \
+    _redis_url = "redis://{host}:{port}/{db}". \
         format(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB)
 
 
     # celery 配置
-    CELERY_TIMEZONE = 'Asia/Shanghai'
+    TIMEZONE = 'Asia/Shanghai'
     CELERY_BROKER_URL = _redis_url
-    CELERY_RESULT_BACKEND = _redis_url
-    CELERYBEAT_SCHEDULE = {
+    RESULT_BACKEND = _redis_url
+    BEAT_SCHEDULE = {
         'query_status': {
             # 这里想要定期执行的函数路径
-            'task': 'task.task.send_message',
+            'task': 'task.task_example.send_message',
             "schedule": timedelta(seconds=60),
         },
-        # 'update_es': {
-        #     # 这里想要定期执行的函数路径
-        #     'task': 'task.task.update_es',
-        #     "schedule": timedelta(minutes=10),
-        # },
-        # 'check_u8_order': {
-        #     # 这里想要定期执行的函数路径
-        #     'task': 'task.task.check_u8_order',
-        #     "schedule": timedelta(minutes=10),
-        # }
     }

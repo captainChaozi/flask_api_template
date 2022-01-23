@@ -1,6 +1,6 @@
 from flask import g, request, current_app
 from sqlalchemy import or_
-from flask.views import MethodView
+from flask_restful import Resource
 from ext.base_schema import MainSchema, ExportSchema
 from .api_utils import abort, param_query, paginator, soft_delete, real_delete
 
@@ -90,7 +90,7 @@ class BaseService(object):
         return resource
 
 
-class BaseResource(MethodView):
+class BaseResource(Resource):
     def __init__(self, data=None, param=None):
         self.db_session = g.db_session
         if param:
