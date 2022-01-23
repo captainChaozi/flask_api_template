@@ -1,0 +1,80 @@
+image: docker:latest
+
+
+stages:
+  - build
+  - deploy
+
+variables:
+  APP_NAME: app
+  IMAGE_NAME: ${APP_NAME}_back:${CI_COMMIT_REF_NAME}
+
+
+build:
+  stage: build
+  retry: 2
+  tags:
+    - zhonghua
+  script:
+    - docker build -t ${IMAGE_NAME} .
+
+deploy-api:
+  stage: deploy
+  retry: 2
+  tags:
+    - zhonghua
+  variables:
+    CON_NAME: ${APP_NAME}_api_${CI_COMMIT_REF_NAME}
+    APP_PORT: 20101
+    DB_HOST: ${APP_NAME}_${CI_COMMIT_REF_NAME}_db
+    DB_PORT: 5432
+    REDIS_HOST: ${APP_NAME}_${CI_COMMIT_REF_NAME}_redis
+    REDIS_PORT: 6379
+    LOG_LEVEL: info
+  script:
+    - docker ps -a | grep -i ${CON_NAME} > /dev/null 2>&1 && docker stop ${CON_NAME} && docker rm ${CON_NAME}
+    - env > env.list
+    - docker run --name ${CON_NAME} --network ${APP_NAME}_${CI_COMMIT_REF_NAME} -d --env-file env.list -p ${APP_PORT}:8000  $IMAGE_NAME
+  only:
+    - dev
+
+deploy-celery:
+  stage: deploy
+  retry: 2
+  tags:
+    - zhonghua
+  variables:
+    DB_HOST: ${APP_NAME}_${CI_COMMIT_REF_NAME}_db
+    DB_PORT: 5432
+    REDIS_HOST: ${APP_NAME}_${CI_COMMIT_REF_NAME}_redis
+    REDIS_PORT: 6379
+    CON_NAME: ${APP_NAME}_celery_${CI_COMMIT_REF_NAME}
+    RUN: celery
+    LOG_LEVEL: info
+  script:
+    - docker ps -a | grep -i ${CON_NAME} > /dev/null 2>&1 && docker stop ${CON_NAME} && docker rm ${CON_NAME}
+    - env > env.list
+    - docker run --name ${CON_NAME} --network ${APP_NAME}_${CI_COMMIT_REF_NAME} -d --env-file env.list ${IMAGE_NAME}
+  only:
+    - dev
+
+deploy-debug:
+  stage: deploy
+  retry: 2
+  tags:
+    - zhonghua
+  variables:
+    CON_NAME: ${APP_NAME}_api_${CI_COMMIT_REF_NAME}
+    APP_PORT: 20102
+    DB_HOST: ${APP_NAME}_${CI_COMMIT_REF_NAME}_db
+    DB_PORT: 5432
+    REDIS_HOST: ${APP_NAME}_${CI_COMMIT_REF_NAME}_redis
+    REDIS_PORT: 6379
+    RUN: debug
+  script:
+    - docker ps -a | grep -i ${CON_NAME} > /dev/null 2>&1 && docker stop ${CON_NAME} && docker rm ${CON_NAME}
+    - env > env.list
+    - docker run --name ${CON_NAME} --network ${APP_NAME}_${CI_COMMIT_REF_NAME} -d --env-file env.list -p ${APP_PORT}:8000  $IMAGE_NAME
+  only:
+    - dev
+

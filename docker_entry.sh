@@ -4,7 +4,7 @@ if [ "$RUN" = "celery" ]; then
     echo "运行celery"
     celery -A  task.celery worker -B --loglevel="${LOG_LEVEL}"
 
-elif [ "$RUN" = "vim" ]; then
+elif [ "$RUN" = "debug" ]; then
     echo "这是调试模式"
     gunicorn run:app -b 0.0.0.0:8000 --log-level debug --reload --log-file app.log
 else
