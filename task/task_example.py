@@ -7,11 +7,11 @@ logger = get_task_logger(__name__)
 
 @celery.task
 def send_message():
-    logger.warning('这是warning 日志')
+    print('corntab 日志')
     return 'celery is working '
 
 
 @celery.task
 def delay_task(message):
-    logger.warning('触发delay')
+    print('delay日志')
     return {"message": f"{message}"}

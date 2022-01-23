@@ -1,7 +1,8 @@
+import logging
+
 from flask import Flask, g
 from app.ext_init import db, get_session, cache
 from config import Config
-from .model import Author, Book
 from .resource import register_api
 from flask_cors import CORS
 from flask_marshmallow import Marshmallow
@@ -24,7 +25,6 @@ def create_app():
 app = create_app()
 
 
-
 @app.before_request
 def create_session():
     g.db_session = get_session()
@@ -33,3 +33,7 @@ def create_session():
 @app.shell_context_processor
 def make_shell_context():
     return dict(db_session=get_session())
+
+
+gunicorn_logger = logging.getLogger('gunicorn.error')
+app.logger.handlers = gunicorn_logger.handlers

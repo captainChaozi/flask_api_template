@@ -1,8 +1,9 @@
-from flask import g, request, current_app
+from flask import g, request,current_app
 from sqlalchemy import or_
 from flask_restful import Resource
 from ext.base_schema import MainSchema, ExportSchema
 from .api_utils import abort, param_query, paginator, soft_delete, real_delete
+
 
 
 class BaseService(object):
@@ -93,6 +94,7 @@ class BaseService(object):
 class BaseResource(Resource):
     def __init__(self, data=None, param=None):
         self.db_session = g.db_session
+        self.logger = current_app.logger
         if param:
             self.param = param
         else:
@@ -105,8 +107,10 @@ class BaseResource(Resource):
             self.data = dict()
             if request.method != 'GET' and request.get_json():
                 self.data = request.json()
-        current_app.logger.info(self.param)
-        current_app.logger.info(self.data)
+
+        self.logger.debug(request.url + " args:" + str(self.param))
+        self.logger.debug(request.url + " body:" + str(self.data))
+
         super().__init__()
 
 

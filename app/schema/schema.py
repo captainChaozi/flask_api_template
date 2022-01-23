@@ -1,4 +1,4 @@
-from app import Author, Book
+from app.model import Author, Book
 from ext import MainSchema, MetaBase
 from marshmallow import fields, Schema
 
