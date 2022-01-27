@@ -1,0 +1,117 @@
+components:
+  schemas:
+    9795140d76644b32a8a6367dd2e1c41bSchema:
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/Author'
+          type: array
+        paging:
+          $ref: '#/components/schemas/Paging'
+      type: object
+    Author:
+      properties:
+        birth:
+          format: date
+          nullable: true
+          type: string
+        create_time:
+          format: date-time
+          type: string
+        extend: {}
+        id:
+          type: string
+        is_delete:
+          nullable: true
+          type: integer
+        modify_time:
+          format: date-time
+          type: string
+        name:
+          maxLength: 50
+          nullable: true
+          type: string
+      type: object
+    Book:
+      properties:
+        author:
+          $ref: '#/components/schemas/Author'
+        author_id:
+          maxLength: 50
+          nullable: true
+          type: string
+        create_time:
+          format: date-time
+          type: string
+        extend: {}
+        id:
+          type: string
+        is_delete:
+          nullable: true
+          type: integer
+        modify_time:
+          format: date-time
+          type: string
+        name:
+          maxLength: 50
+          nullable: true
+          type: string
+      type: object
+    Paging:
+      properties:
+        page:
+          type: integer
+        per_page:
+          type: integer
+        total_number:
+          type: integer
+      type: object
+    ad6c9c5f727b4a4caf80e5ba608d5720Schema:
+      properties:
+        data:
+          items:
+            $ref: '#/components/schemas/Book'
+          type: array
+        paging:
+          $ref: '#/components/schemas/Paging'
+      type: object
+info:
+  description: A minimal gist API
+  title: Gisty
+  version: 1.0.0
+openapi: 3.0.2
+paths:
+  /author/:
+    get:
+      description: "\u83B7\u53D6\u4F5C\u8005\u7684\u5217\u8868"
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/9795140d76644b32a8a6367dd2e1c41bSchema'
+    post:
+      description: "\u521B\u5EFA\u4F5C\u8005"
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Author'
+  /author/<string:parent_id>/books:
+    get:
+      description: "\u83B7\u53D6\u4E66\u672C\u7684\u5217\u8868"
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ad6c9c5f727b4a4caf80e5ba608d5720Schema'
+    post:
+      description: "\u521B\u5EFA\u4E66\u672C"
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'

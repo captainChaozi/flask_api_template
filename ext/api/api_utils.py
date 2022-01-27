@@ -105,7 +105,7 @@ def abort(http_status_code, **kwargs):
     except HTTPException as e:
         if len(kwargs):
             e.data = kwargs
-            current_app.logger.error(kwargs)
+            current_app.logger.info(kwargs)
         raise
 
 

@@ -1,7 +1,7 @@
 import os
 import uuid
 from urllib.parse import quote
-
+from marshmallow import Schema
 from flask import send_file, make_response
 from marshmallow import fields, post_dump
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
@@ -29,6 +29,12 @@ class AllSchema(MainSchema):
     tenant_id = fields.String(allow_none=True)
     create_user = fields.String(allow_none=True)
     create_group = fields.String(allow_none=True)
+
+
+class PagingSchema(Schema):
+    page = fields.Integer()
+    per_page = fields.Integer()
+    total_number = fields.Integer()
 
 
 class ExportSchema(MainSchema):

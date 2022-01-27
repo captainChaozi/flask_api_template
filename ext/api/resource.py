@@ -1,9 +1,8 @@
-from flask import g, request,current_app
+from flask import g, request, current_app
 from sqlalchemy import or_
 from flask_restful import Resource
 from ext.base_schema import MainSchema, ExportSchema
 from .api_utils import abort, param_query, paginator, soft_delete, real_delete
-
 
 
 class BaseService(object):
@@ -115,18 +114,20 @@ class BaseResource(Resource):
 
 
 class ListResource(BaseResource):
+    name = ''  # 资源名称
+    uri = '/'  # 注册URI
     Schema = MainSchema  # 利用这个schema 来配置
     ExcelSchema = ExportSchema
     Model = None  # 操作那些资源
     Service = BaseService
     parent_id_field = None  # 父ID字段名
-    like_field = ()  # 模糊搜索参数
-    search_field = ()
+    like_field = ()  # 单字段模糊搜索参数
+    search_field = ()  # search 参数搜索
     between_field = ()  # 之间查询参数
-    in_field = ()  # in 参数
-    soft_delete = True
-    order_by_field = ()
-    not_repeat_field = dict()  # {"style_code":"款号",}
+    in_field = ()  # in 参数搜索
+    soft_delete = True  # 假删除
+    order_by_field = ()  # 噢爱须字段
+    not_repeat_field = dict()  # {"field":"字段意义",} 不允许重复字段
 
     def __init__(self, data=None, param=None):
         super().__init__(data=data, param=param)
@@ -206,8 +207,6 @@ class ListResource(BaseResource):
             schema = self.Schema()
             return schema.dump(resource)
 
-    # @use_kwargs({'ids': fields.List(cls_or_instance=fields.String())})
-    # @marshal_with({'message': fields.String(default='ok')})
     def delete(self, parent_id=None):
         with self.db_session.begin(subtransactions=True):
             ids = self.data['ids']
@@ -225,7 +224,7 @@ class DetailResource(BaseResource):
     Schema = MainSchema
     Service = BaseService
     not_repeat_field = dict()
-    parent_id_field = ''
+    parent_id_field = None
     soft_delete = True
 
     def __init__(self, data=None, param=None):

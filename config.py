@@ -3,6 +3,7 @@ import logging
 from datetime import timedelta
 
 basedir = os.path.abspath(os.path.dirname(__file__))
+docs_file = os.path.join(basedir, 'docs', 'api.yaml')
 
 
 class Config:
