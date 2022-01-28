@@ -23,7 +23,8 @@ build:
 
 
 ## 通过gitlab创建 数据库 redis
-create_db:
+deploy:
+  image: tmaier/docker-compose
   stage: deploy
   retry: 2
   tags:
