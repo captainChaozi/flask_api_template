@@ -70,7 +70,6 @@ services:
   debug:
     image: ${IMAGE_NAME}
     environment:
-      APP_PORT: 20301
       DB_HOST: ${APP_FULL}_db
       DB_PORT: 5432
       REDIS_HOST: ${APP_FULL}_redis
@@ -79,7 +78,7 @@ services:
     expose:
       - 80
     ports:
-      - "${PORT}01:80"
+      - "${PORT}05:80"
     container_name: ${APP_FULL}_debug
     networks:
       - app_network
