@@ -1,5 +1,5 @@
 from flask import Flask, g
-from app.ext_init import db, get_session, cache,spec
+from app.ext_init import db, get_session, cache
 from app.resource import resource_register
 from config import Config
 from flask_cors import CORS
@@ -16,7 +16,7 @@ def create_app():
     Marshmallow(flasker)
     CORS(flasker)
     Migrate(flasker, db)
-    resource_register(Api(flasker),spec)
+    resource_register(Api(flasker))
     return flasker
 
 

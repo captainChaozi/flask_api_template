@@ -20,7 +20,6 @@ cryptography==36.0.1
 decorator==5.1.1
 Deprecated==1.2.13
 executing==0.8.2
-flasgger==0.9.5
 Flask==2.0.2
 Flask-Cors==3.0.10
 flask-marshmallow==0.14.0

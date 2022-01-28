@@ -14,7 +14,7 @@ build:
   stage: build
   retry: 2
   tags:
-    - zhonghua
+    - xijia
   script:
     - docker build -t ${IMAGE_NAME} .
 
@@ -22,10 +22,10 @@ deploy-api:
   stage: deploy
   retry: 2
   tags:
-    - zhonghua
+    - xijia
   variables:
     CON_NAME: ${APP_NAME}_api_${CI_COMMIT_REF_NAME}
-    APP_PORT: 20101
+    APP_PORT: 20301
     DB_HOST: ${APP_NAME}_${CI_COMMIT_REF_NAME}_db
     DB_PORT: 5432
     REDIS_HOST: ${APP_NAME}_${CI_COMMIT_REF_NAME}_redis
@@ -34,7 +34,7 @@ deploy-api:
   script:
     - docker ps -a | grep -i ${CON_NAME} > /dev/null 2>&1 && docker stop ${CON_NAME} && docker rm ${CON_NAME}
     - env > env.list
-    - docker run --name ${CON_NAME} --network ${APP_NAME}_${CI_COMMIT_REF_NAME} -d --env-file env.list -p ${APP_PORT}:8000  $IMAGE_NAME
+    - docker run --name ${CON_NAME} --network ${APP_NAME}_${CI_COMMIT_REF_NAME} -d --env-file env.list -p ${APP_PORT}:80  $IMAGE_NAME
   only:
     - dev
 
@@ -42,7 +42,7 @@ deploy-celery:
   stage: deploy
   retry: 2
   tags:
-    - zhonghua
+    - xijia
   variables:
     DB_HOST: ${APP_NAME}_${CI_COMMIT_REF_NAME}_db
     DB_PORT: 5432
@@ -62,10 +62,10 @@ deploy-debug:
   stage: deploy
   retry: 2
   tags:
-    - zhonghua
+    - xijia
   variables:
-    CON_NAME: ${APP_NAME}_api_${CI_COMMIT_REF_NAME}
-    APP_PORT: 20102
+    CON_NAME: ${APP_NAME}_debug_${CI_COMMIT_REF_NAME}
+    APP_PORT: 20302
     DB_HOST: ${APP_NAME}_${CI_COMMIT_REF_NAME}_db
     DB_PORT: 5432
     REDIS_HOST: ${APP_NAME}_${CI_COMMIT_REF_NAME}_redis
@@ -74,7 +74,22 @@ deploy-debug:
   script:
     - docker ps -a | grep -i ${CON_NAME} > /dev/null 2>&1 && docker stop ${CON_NAME} && docker rm ${CON_NAME}
     - env > env.list
-    - docker run --name ${CON_NAME} --network ${APP_NAME}_${CI_COMMIT_REF_NAME} -d --env-file env.list -p ${APP_PORT}:8000  $IMAGE_NAME
+    - docker run --name ${CON_NAME} --network ${APP_NAME}_${CI_COMMIT_REF_NAME} -d --env-file env.list -p ${APP_PORT}:80  $IMAGE_NAME
   only:
     - dev
 
+deploy-docs:
+  stage: deploy
+  retry: 2
+  tags:
+    - xijia
+  variables:
+    CON_NAME: ${APP_NAME}_docs_${CI_COMMIT_REF_NAME}
+    APP_PORT: 20305
+    SPEC_URL: http://${APP_NAME}_api_${CI_COMMIT_REF_NAME}/apidocs.json
+  script:
+    - docker ps -a | grep -i ${CON_NAME} > /dev/null 2>&1 && docker stop ${CON_NAME} && docker rm ${CON_NAME}
+    - env > env.list
+    - docker run --name ${CON_NAME} --network ${APP_NAME}_${CI_COMMIT_REF_NAME} -d --env-file env.list -p ${APP_PORT}:80 redocly/redoc
+  only:
+    - dev

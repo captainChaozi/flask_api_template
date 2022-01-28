@@ -1,41 +1,30 @@
-from ext.base_schema import PagingSchema
-from .book import AuthorListResource, BookListResource
-from marshmallow import Schema, fields
 import inspect
-import uuid
 import sys
+from .book import AuthorListResource, BookListResource
 from flask_restful import Api
-from apispec import APISpec
-from config import docs_file
-from ext import ListResource
+from ext import BaseResource
+from ext.api.docs import create_docs
 
 
-def resource_register(api: Api, spec: APISpec):
+def collect_resource():
+    resources = []
     for _, resource in inspect.getmembers(sys.modules[__name__], inspect.isclass):
-        if issubclass(resource, ListResource) and resource != ListResource:
-            api.add_resource(resource, resource.uri)
+        if issubclass(resource, BaseResource) and resource != BaseResource:
+            resources.append(resource)
+    return resources
 
-            class GetSchema(Schema):
-                data = fields.Nested(resource.Schema, many=True)
-                paging = fields.Nested(PagingSchema)
 
-            page_schema_name = f'{uuid.uuid4().hex}Schema'
-            spec.components.schema(page_schema_name, schema=GetSchema)
-            schema_name = resource.Schema.__name__
-            # spec.components.schema(schema_name,schema=resource.Schema)
+RESOURCE = collect_resource()
 
-            spec.path(
-                path=f"{resource.uri}",
-                operations=dict(
-                    get=dict(
-                        responses={"200": {"content": {"application/json": {"schema": page_schema_name}}}},
-                        description=f"获取{resource.name}的列表"
-                    ),
-                    post=dict(
-                        responses={"200": {"content": {"application/json": {"schema": schema_name}}}},
-                        description=f"创建{resource.name}"
-                    )
-                ),
-            )
-    with open(docs_file, 'w') as f:
-        f.write(spec.to_yaml())
+
+class APIDOCSResource(BaseResource):
+    uri = '/apidocs.json'
+
+    def get(self, parent_id=None):
+        return create_docs(RESOURCE)
+
+
+def resource_register(api: Api):
+    for resource in RESOURCE:
+        api.add_resource(resource, resource.uri)
+    api.add_resource(APIDOCSResource, APIDOCSResource.uri)

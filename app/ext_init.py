@@ -8,13 +8,6 @@ cache = RedisCache()
 
 
 
-spec = APISpec(
-    title="Gisty",
-    version="1.0.0",
-    openapi_version="3.0.2",
-    info=dict(description="A minimal gist API"),
-    plugins=[MarshmallowPlugin()],
-)
 
 
 def get_session():
