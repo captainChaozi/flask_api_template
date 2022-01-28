@@ -7,7 +7,7 @@ stages:
 
 variables:
   APP: xijia
-  IMAGE_NAME: ${APP}_back:${CI_COMMIT_REF_NAME}_${CI_JOB_ID}
+  IMAGE_NAME: ${APP}_back:${CI_COMMIT_REF_NAME}
   DB_PASSWORD: chaozi
   APP_FULL: ${APP}_${CI_COMMIT_REF_NAME}
   PORT: 201
