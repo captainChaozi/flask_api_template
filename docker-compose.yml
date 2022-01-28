@@ -33,6 +33,7 @@ services:
       APP_PORT: 20301
       DB_HOST: ${APP_FULL}_db
       DB_PORT: 5432
+      DB_PASSWORD: ${DB_PASSWORD}
       REDIS_HOST: ${APP_FULL}_redis
       REDIS_PORT: 6379
       LOG_LEVEL: info
@@ -49,6 +50,7 @@ services:
       APP_PORT: 20301
       DB_HOST: ${APP_FULL}_db
       DB_PORT: 5432
+      DB_PASSWORD: ${DB_PASSWORD}
       REDIS_HOST: ${APP_FULL}_redis
       REDIS_PORT: 6379
       LOG_LEVEL: info
@@ -59,7 +61,7 @@ services:
   docs:
     image: redocly/redoc
     environment:
-      SPEC_URL: "http://${APP_FULL}_api/apidocs.json"
+      SPEC_URL: "${DOCS_URI}"
     expose:
       - 80
     ports:
@@ -74,6 +76,7 @@ services:
       DB_PORT: 5432
       REDIS_HOST: ${APP_FULL}_redis
       REDIS_PORT: 6379
+      DB_PASSWORD: ${DB_PASSWORD}
       RUN: debug
     expose:
       - 80
