@@ -4,18 +4,18 @@ services:
   db:
     image: postgres:14
     environment:
-      POSTGRES_PASSWORD: "${DB_PASSWORD}"
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
       PGDATA: /data
     volumes:
-      - "${PG_DATA}:/data"
+      - "/data/${APP_FULL}:/data"
     ports:
-      - "${PG_PORT}:5432"
+      - "${PORT}03:5432"
     expose:
       - "5432"
     restart: always
-    container_name: ${NET}_db
+    container_name: ${APP_FULL}_db
     networks:
-      - my_network
+      - app_network
 
   redis:
     image: redis:6
@@ -23,12 +23,68 @@ services:
     expose:
       - "6379"
     ports:
-      - "${REDIS_PORT}:6379"
-    container_name: ${NET}_redis
+      - "${PORT}04:6379"
+    container_name: ${APP_FULL}_redis
     networks:
-      - my_network
+      - app_network
+  api:
+    image: ${IMAGE_NAME}
+    environment:
+      APP_PORT: 20301
+      DB_HOST: ${APP_FULL}_db
+      DB_PORT: 5432
+      REDIS_HOST: ${APP_FULL}_redis
+      REDIS_PORT: 6379
+      LOG_LEVEL: info
+    expose:
+      - 80
+    ports:
+      - "${PORT}01:80"
+    container_name: ${APP_FULL}_api
+    networks:
+      - app_network
+  celery:
+    image: ${IMAGE_NAME}
+    environment:
+      APP_PORT: 20301
+      DB_HOST: ${APP_FULL}_db
+      DB_PORT: 5432
+      REDIS_HOST: ${APP_FULL}_redis
+      REDIS_PORT: 6379
+      LOG_LEVEL: info
+      RUN: celery
+    container_name: ${APP_FULL}_celery
+    networks:
+      - app_network
+  docs:
+    image: redocly/redoc
+    environment:
+      SPEC_URL: "http://${APP_FULL}_api/apidocs.json"
+    expose:
+      - 80
+    ports:
+      - "${PORT}02:80"
+    container_name: ${APP_FULL}_docs
+    networks:
+      - app_network
+  debug:
+    image: ${IMAGE_NAME}
+    environment:
+      APP_PORT: 20301
+      DB_HOST: ${APP_FULL}_db
+      DB_PORT: 5432
+      REDIS_HOST: ${APP_FULL}_redis
+      REDIS_PORT: 6379
+      RUN: debug
+    expose:
+      - 80
+    ports:
+      - "${PORT}01:80"
+    container_name: ${APP_FULL}_debug
+    networks:
+      - app_network
 
 networks:
-  my_network:
+  app_network:
     external:
-      name: ${NET}
+      name: ${APP_FULL}

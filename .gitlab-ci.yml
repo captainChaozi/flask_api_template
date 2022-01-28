@@ -2,30 +2,15 @@ image: docker:latest
 
 
 stages:
-  - init
   - build
   - deploy
 
 variables:
-  APP_NAME: xijia
-  IMAGE_NAME: ${APP_NAME}_back:${CI_COMMIT_REF_NAME}
+  APP: xijia
+  IMAGE_NAME: ${APP}_back:${CI_COMMIT_REF_NAME}_${CI_JOB_ID}
   DB_PASSWORD: chaozi
-
-# 通过gitlab创建 数据库 redis
-create_db:
-  stage: init
-  retry: 2
-  tags:
-    - xijia
-  variables:
-    NET: ${APP_NAME}_{CI_COMMIT_REF_NAME}
-  script:
-    - mkdir ${NET} && cp ./docker-compose.yml ./${NET} && cd ${NET}
-    - docker network ls | grep ${NET} > /dev/null 2>&1 || docker network create ${NET}
-    - docker-compose pull
-    - docker-compose up -f ./docker-compose.yml -d  --force-recreate
-  when:
-    - manual
+  APP_FULL: ${APP}_${CI_COMMIT_REF_NAME}
+  PORT: 201
 
 
 build:
@@ -37,78 +22,89 @@ build:
     - docker build -t ${IMAGE_NAME} .
 
 
-deploy-api:
+## 通过gitlab创建 数据库 redis
+create_db:
   stage: deploy
   retry: 2
   tags:
     - xijia
-  variables:
-    CON_NAME: ${APP_NAME}_api_${CI_COMMIT_REF_NAME}
-    APP_PORT: 20301
-    DB_HOST: ${APP_NAME}_${CI_COMMIT_REF_NAME}_db
-    DB_PORT: 5432
-    REDIS_HOST: ${APP_NAME}_${CI_COMMIT_REF_NAME}_redis
-    REDIS_PORT: 6379
-    LOG_LEVEL: info
   script:
-    - docker ps -a | grep -i ${CON_NAME} > /dev/null 2>&1 && docker stop ${CON_NAME} && docker rm ${CON_NAME}
-    - env > env.list
-    - docker run --name ${CON_NAME} --network ${APP_NAME}_${CI_COMMIT_REF_NAME} -d --env-file env.list -p ${APP_PORT}:80  $IMAGE_NAME
-  only:
-    - main
+    - mkdir ${NET} && cp ./docker-compose.yml ./${NET} && cd ${NET}
+    - docker-compose up -d
 
-deploy-celery:
-  stage: deploy
-  retry: 2
-  tags:
-    - xijia
-  variables:
-    DB_HOST: ${APP_NAME}_${CI_COMMIT_REF_NAME}_db
-    DB_PORT: 5432
-    REDIS_HOST: ${APP_NAME}_${CI_COMMIT_REF_NAME}_redis
-    REDIS_PORT: 6379
-    CON_NAME: ${APP_NAME}_celery_${CI_COMMIT_REF_NAME}
-    RUN: celery
-    LOG_LEVEL: info
-  script:
-    - docker ps -a | grep -i ${CON_NAME} > /dev/null 2>&1 && docker stop ${CON_NAME} && docker rm ${CON_NAME}
-    - env > env.list
-    - docker run --name ${CON_NAME} --network ${APP_NAME}_${CI_COMMIT_REF_NAME} -d --env-file env.list ${IMAGE_NAME}
-  only:
-    - main
 
-deploy-debug:
-  stage: deploy
-  retry: 2
-  tags:
-    - xijia
-  variables:
-    CON_NAME: ${APP_NAME}_debug_${CI_COMMIT_REF_NAME}
-    APP_PORT: 20302
-    DB_HOST: ${APP_NAME}_${CI_COMMIT_REF_NAME}_db
-    DB_PORT: 5432
-    REDIS_HOST: ${APP_NAME}_${CI_COMMIT_REF_NAME}_redis
-    REDIS_PORT: 6379
-    RUN: debug
-  script:
-    - docker ps -a | grep -i ${CON_NAME} > /dev/null 2>&1 && docker stop ${CON_NAME} && docker rm ${CON_NAME}
-    - env > env.list
-    - docker run --name ${CON_NAME} --network ${APP_NAME}_${CI_COMMIT_REF_NAME} -d --env-file env.list -p ${APP_PORT}:80  $IMAGE_NAME
-  only:
-    - main
-
-deploy-docs:
-  stage: deploy
-  retry: 2
-  tags:
-    - xijia
-  variables:
-    CON_NAME: ${APP_NAME}_docs_${CI_COMMIT_REF_NAME}
-    APP_PORT: 20305
-    SPEC_URL: http://${APP_NAME}_api_${CI_COMMIT_REF_NAME}/apidocs.json
-  script:
-    - docker ps -a | grep -i ${CON_NAME} > /dev/null 2>&1 && docker stop ${CON_NAME} && docker rm ${CON_NAME}
-    - env > env.list
-    - docker run --name ${CON_NAME} --network ${APP_NAME}_${CI_COMMIT_REF_NAME} -d --env-file env.list -p ${APP_PORT}:80 redocly/redoc
-  only:
-    - main
+#deploy-api:
+#  stage: deploy
+#  retry: 2
+#  tags:
+#    - xijia
+#  variables:
+#    CON_NAME: ${APP_NAME}_api_${CI_COMMIT_REF_NAME}
+#    APP_PORT: 20301
+#    DB_HOST: ${APP_NAME}_${CI_COMMIT_REF_NAME}_db
+#    DB_PORT: 5432
+#    REDIS_HOST: ${APP_NAME}_${CI_COMMIT_REF_NAME}_redis
+#    REDIS_PORT: 6379
+#    LOG_LEVEL: info
+#  script:
+#    - docker ps -a | grep -i ${CON_NAME} > /dev/null 2>&1 && docker stop ${CON_NAME} && docker rm ${CON_NAME}
+#    - env > env.list
+#    - docker run --name ${CON_NAME} --network ${NET} -d --env-file env.list -p ${APP_PORT}:80  $IMAGE_NAME
+#  only:
+#    - main
+#
+#deploy-celery:
+#  stage: deploy
+#  retry: 2
+#  tags:
+#    - xijia
+#  variables:
+#    DB_HOST: ${APP_NAME}_${CI_COMMIT_REF_NAME}_db
+#    DB_PORT: 5432
+#    REDIS_HOST: ${APP_NAME}_${CI_COMMIT_REF_NAME}_redis
+#    REDIS_PORT: 6379
+#    CON_NAME: ${APP_NAME}_celery_${CI_COMMIT_REF_NAME}
+#    RUN: celery
+#    LOG_LEVEL: info
+#  script:
+#    - docker ps -a | grep -i ${CON_NAME} > /dev/null 2>&1 && docker stop ${CON_NAME} && docker rm ${CON_NAME}
+#    - env > env.list
+#    - docker run --name ${CON_NAME} --network ${NET} -d --env-file env.list ${IMAGE_NAME}
+#  only:
+#    - main
+#
+#deploy-debug:
+#  stage: deploy
+#  retry: 2
+#  tags:
+#    - xijia
+#  variables:
+#    CON_NAME: ${APP_NAME}_debug_${CI_COMMIT_REF_NAME}
+#    APP_PORT: 20302
+#    DB_HOST: ${APP_NAME}_${CI_COMMIT_REF_NAME}_db
+#    DB_PORT: 5432
+#    REDIS_HOST: ${APP_NAME}_${CI_COMMIT_REF_NAME}_redis
+#    REDIS_PORT: 6379
+#    RUN: debug
+#  script:
+#    - docker ps -a | grep -i ${CON_NAME} > /dev/null 2>&1 && docker stop ${CON_NAME} && docker rm ${CON_NAME}
+#    - env > env.list
+#    - docker run --name ${CON_NAME} --network ${NET} -d --env-file env.list -p ${APP_PORT}:80  $IMAGE_NAME
+#  only:
+#    - main
+#
+#deploy-docs:
+#  stage: deploy
+#  retry: 2
+#  tags:
+#    - xijia
+#  variables:
+#    CON_NAME: ${APP_NAME}_docs_${CI_COMMIT_REF_NAME}
+#    APP_PORT: 20305
+#    SPEC_URL: http://${APP_NAME}_api_${CI_COMMIT_REF_NAME}/apidocs.json
+#  script:
+#    - docker ps -a | grep -i ${CON_NAME} > /dev/null 2>&1 && docker stop ${CON_NAME} && docker rm ${CON_NAME}
+#    - env > env.list
+#    - docker run --name ${CON_NAME} --network ${NET} -d --env-file env.list -p ${APP_PORT}:80 redocly/redoc
+#  only:
+#    - main
