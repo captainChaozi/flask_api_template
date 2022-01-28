@@ -30,7 +30,6 @@ deploy:
   tags:
     - xijia
   script:
-    - mkdir ${NET} && cp ./docker-compose.yml ./${NET} && cd ${NET}
     - docker-compose up -d
 
 
