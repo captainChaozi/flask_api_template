@@ -11,7 +11,7 @@ variables:
   DB_PASSWORD: chaozi
   APP_FULL: ${APP}_${CI_COMMIT_REF_NAME}
   PORT: 201
-  DOCS_URI: "http://http://139.196.85.124:20102/apidocs.json"
+  DOCS_URI: "http://139.196.85.124:20101/apidocs.json"
 
 
 build:

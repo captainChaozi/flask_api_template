@@ -9,9 +9,6 @@ class AuthorListResource(ListResource):
     Model = Author
     Schema = AuthorSchema
 
-    def get(self, parent_id=None):
-        return "hello"
-
 
 class BookListResource(ListResource):
     name = '书本'
