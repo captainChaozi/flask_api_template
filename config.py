@@ -67,7 +67,7 @@ class Config:
 
     # 日志配置
     logging.basicConfig(format='[%(asctime)s] %(levelname)s in %(module)s %(lineno)d: %(message)s')
-    DOCS_CONFIG = dict(title="Gisty",
+    DOCS_CONFIG = dict(title="FlaskApiTemplate-API文档",
                        version="1.0.0",
                        openapi_version="3.0.2",
                        info=dict(description="A minimal gist API"), )

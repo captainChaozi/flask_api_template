@@ -28,7 +28,16 @@ def create_docs(resources: list) -> dict:
                 path=f"{resource.uri}",
                 operations=dict(
                     get=dict(
-                        # parameters=[{} fro i in resource.],
+                        parameters=[{"name": "status",
+                                     "in": "query",
+                                     "description": "Status values that need to be considered for filter",
+                                     "required": True,
+                                     "type": "array",
+                                     "items": {"type": "string", "enum": ["available", "pending", "sold"],
+                                               "default": "available"},
+                                     "collectionFormat": "multi"
+
+                                     }],
                         responses={"200": {"content": {"application/json": {"schema": page_schema_name}}}},
                         description=f"获取{resource.name}的列表"
                     ),
