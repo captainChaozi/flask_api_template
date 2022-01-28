@@ -36,7 +36,7 @@ deploy-api:
     - env > env.list
     - docker run --name ${CON_NAME} --network ${APP_NAME}_${CI_COMMIT_REF_NAME} -d --env-file env.list -p ${APP_PORT}:80  $IMAGE_NAME
   only:
-    - dev
+    - main
 
 deploy-celery:
   stage: deploy
@@ -56,7 +56,7 @@ deploy-celery:
     - env > env.list
     - docker run --name ${CON_NAME} --network ${APP_NAME}_${CI_COMMIT_REF_NAME} -d --env-file env.list ${IMAGE_NAME}
   only:
-    - dev
+    - main
 
 deploy-debug:
   stage: deploy
@@ -76,7 +76,7 @@ deploy-debug:
     - env > env.list
     - docker run --name ${CON_NAME} --network ${APP_NAME}_${CI_COMMIT_REF_NAME} -d --env-file env.list -p ${APP_PORT}:80  $IMAGE_NAME
   only:
-    - dev
+    - main
 
 deploy-docs:
   stage: deploy
@@ -92,4 +92,4 @@ deploy-docs:
     - env > env.list
     - docker run --name ${CON_NAME} --network ${APP_NAME}_${CI_COMMIT_REF_NAME} -d --env-file env.list -p ${APP_PORT}:80 redocly/redoc
   only:
-    - dev
+    - main
