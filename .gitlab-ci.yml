@@ -2,12 +2,30 @@ image: docker:latest
 
 
 stages:
+  - init
   - build
   - deploy
 
 variables:
-  APP_NAME: app
+  APP_NAME: xijia
   IMAGE_NAME: ${APP_NAME}_back:${CI_COMMIT_REF_NAME}
+  DB_PASSWORD: chaozi
+
+# 通过gitlab创建 数据库 redis
+create_db:
+  stage: init
+  retry: 2
+  tags:
+    - xijia
+  variables:
+    NET: ${APP_NAME}_{CI_COMMIT_REF_NAME}
+  script:
+    - mkdir ${NET} && cp ./docker-compose.yml ./${NET} && cd ${NET}
+    - docker network ls | grep ${NET} > /dev/null 2>&1 || docker network create ${NET}
+    - docker-compose pull
+    - docker-compose up -f ./docker-compose.yml -d  --force-recreate
+  when:
+    - manual
 
 
 build:
@@ -17,6 +35,7 @@ build:
     - xijia
   script:
     - docker build -t ${IMAGE_NAME} .
+
 
 deploy-api:
   stage: deploy
