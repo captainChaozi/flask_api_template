@@ -61,7 +61,6 @@ def param_query(models, param=None, like_fields=(), between_field=(), in_field=(
         for i in between_field:
             start = i + '_start'
             end = i + '_end'
-            print(param)
             if (start in param) and (end in param) and getattr(model, i, None):
                 if start.find('time') != -1 and end.find('time') != -1:
                     start = datetime.datetime.strptime(param.get(start), '%Y-%m-%d %H:%M:%S')
@@ -72,7 +71,6 @@ def param_query(models, param=None, like_fields=(), between_field=(), in_field=(
                 else:
                     start = param.get(start)
                     end = param.get(end)
-                print(start, end)
                 param_list.append(getattr(model, i).between(start, end))
 
     return tuple(param_list)

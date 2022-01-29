@@ -17,6 +17,10 @@ class BaseSchema(SQLAlchemyAutoSchema):
     extend = fields.Raw()
 
 
+class IDSchema(Schema):
+    ids = fields.List(cls_or_instance=fields.String)
+
+
 class MetaBase:
     include_fk = True
     dateformat = '%Y-%m-%d'

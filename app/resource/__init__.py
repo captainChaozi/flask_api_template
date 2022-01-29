@@ -2,8 +2,7 @@ import inspect
 import sys
 from .book import AuthorListResource, BookListResource, AuthorDetailResource, BookDetailResource
 from flask_restful import Api
-from ext import BaseResource
-from ext.api.docs import create_docs
+from ext import BaseResource, MyAPISpec
 
 
 def collect_resource():
@@ -21,7 +20,7 @@ class APIDOCSResource(BaseResource):
     uri = '/apidocs.json'
 
     def get(self, parent_id=None):
-        return create_docs(RESOURCE)
+        return MyAPISpec().common_docs(RESOURCE)
 
 
 def resource_register(api: Api):

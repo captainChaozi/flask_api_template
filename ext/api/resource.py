@@ -132,7 +132,7 @@ class ListResource(BaseResource):
     between_field = ()  # 之间查询参数
     in_field = ()  # in 参数搜索
     soft_delete = True  # 假删除
-    order_by_field = ()  # 噢爱须字段
+    order_by = ()  # 排序字段
     not_repeat_field = dict()  # {"field":"字段意义",} 不允许重复字段
 
     def __init__(self, data=None, param=None):
@@ -148,8 +148,8 @@ class ListResource(BaseResource):
         @date: 2020/04/27
         @return:
         """
-        if self.order_by_field != ():
-            self.query = self.query.order_by(*self.order_by_field)
+        if self.order_by != ():
+            self.query = self.query.order_by(*self.order_by)
         else:
             if hasattr(self.Model, 'modify_time'):
                 self.query = self.query.order_by(self.Model.modify_time.desc())

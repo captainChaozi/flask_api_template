@@ -9,6 +9,8 @@ class AuthorListResource(ListResource):
     Model = Author
     Schema = AuthorSchema
     PostSchema = AuthorPostSchema
+    between_field = ('create_time','modify_time')
+    search_field = ('name',)
 
 
 class AuthorDetailResource(DetailResource):
