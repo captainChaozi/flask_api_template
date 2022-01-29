@@ -37,20 +37,22 @@ def create_docs(resources: list) -> dict:
                 'in': 'query',
                 'name': 'page',
                 'schema': {
-                    'type': 'integer'
+                    'type': 'integer',
+                    'default': 1
+
                 },
                 'description': '第几页',
-                'default': 1
             }
             global_parameters.append(page_parameter)
             per_page_parameter = {
                 'in': 'query',
                 'name': 'per_page',
                 'schema': {
-                    'type': 'integer'
+                    'type': 'integer',
+                    'default': 10
+
                 },
                 'description': '每页多少条',
-                'default': 10
             }
             global_parameters.append(per_page_parameter)
             if '<string:parent_id>' in uri:
