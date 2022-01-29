@@ -1,7 +1,7 @@
 from flask import g, request, current_app
 from sqlalchemy import or_
 from flask_restful import Resource
-from ext.api.base_schema import MainSchema, ExportSchema
+from ext.api.base_schema import BaseSchema, ExportSchema
 from .api_utils import abort, param_query, paginator, soft_delete, real_delete
 
 
@@ -93,6 +93,7 @@ class BaseService(object):
 class BaseResource(Resource):
     name = ''  # 资源名称
     uri = '/'  # 注册URI
+
     def __init__(self, data=None, param=None):
         self.db_session = g.db_session
         self.logger = current_app.logger
@@ -118,7 +119,8 @@ class BaseResource(Resource):
 class ListResource(BaseResource):
     name = ''  # 资源名称
     uri = '/'  # 注册URI
-    Schema = MainSchema  # 利用这个schema 来配置
+    Schema = BaseSchema  # 利用这个schema 来配置
+    PostSchema = BaseSchema
     ExcelSchema = ExportSchema
     Model = None  # 操作那些资源
     Service = BaseService
@@ -190,7 +192,7 @@ class ListResource(BaseResource):
         return paginator(self.query, schema)
 
     def post(self, parent_id=None):
-        schema = self.Schema()
+        schema = self.PostSchema()
         data = schema.load(self.data)
         for field in self.not_repeat_field:
             repeat = self.query.filter(getattr(self.Model, field) == data.get(field),
@@ -223,7 +225,8 @@ class ListResource(BaseResource):
 
 class DetailResource(BaseResource):
     Model = None
-    Schema = MainSchema
+    Schema = BaseSchema
+    PutSchema = BaseSchema
     Service = BaseService
     not_repeat_field = dict()
     parent_id_field = None
@@ -240,7 +243,7 @@ class DetailResource(BaseResource):
 
     def put(self, resource_id):
         resource = self.db_session.query(self.Model).filter(self.Model.id == resource_id).first()
-        schema = self.Schema()
+        schema = self.PutSchema()
         data = schema.load(self.data)
         for field in self.not_repeat_field:
             repeat = self.db_session.query(self.Model).filter(getattr(self.Model, field) == data.get(field),

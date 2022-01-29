@@ -70,4 +70,9 @@ class Config:
     DOCS_CONFIG = dict(title="FlaskApiTemplate-API文档",
                        version="1.0.0",
                        openapi_version="3.0.2",
-                       info=dict(description="A minimal gist API"), )
+                       info=dict(description="A minimal gist API"),
+                       server=[dict(
+                           url="http://localhost:20301",
+                           description="dev api"
+                       )]
+                       )

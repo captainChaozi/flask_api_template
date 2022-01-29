@@ -10,10 +10,10 @@ from pandas import DataFrame
 from config import basedir
 
 
-class MainSchema(SQLAlchemyAutoSchema):
-    id = fields.String()
-    create_time = fields.DateTime()
-    modify_time = fields.DateTime()
+class BaseSchema(SQLAlchemyAutoSchema):
+    id = fields.String(dump_only=True)
+    create_time = fields.DateTime(dump_only=True)
+    modify_time = fields.DateTime(dump_only=True)
     extend = fields.Raw()
 
 
@@ -21,9 +21,14 @@ class MetaBase:
     include_fk = True
     dateformat = '%Y-%m-%d'
     datetimeformat = '%Y-%m-%d %H:%M:%S'
+    exclude = ('is_delete',)
 
 
-class AllSchema(MainSchema):
+class PostMetaBase(MetaBase):
+    exclude = ('id', 'create_time', 'modify_time', 'is_delete')
+
+
+class AllSchema(BaseSchema):
     user_id = fields.String(allow_none=True)
     group_id = fields.String(allow_none=True)
     tenant_id = fields.String(allow_none=True)
@@ -37,7 +42,7 @@ class PagingSchema(Schema):
     total_number = fields.Integer()
 
 
-class ExportSchema(MainSchema):
+class ExportSchema(BaseSchema):
 
     @post_dump(pass_many=True)
     def data_excel(self, data):

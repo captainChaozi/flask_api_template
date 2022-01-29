@@ -1,4 +1,5 @@
 import uuid
+from pprint import pprint
 
 from apispec import APISpec
 from apispec.ext.marshmallow import MarshmallowPlugin
@@ -20,32 +21,33 @@ def create_docs(resources: list) -> dict:
                 data = fields.Nested(resource.Schema, many=True)
                 paging = fields.Nested(PagingSchema)
 
+            # 注册GetSchema
             page_schema_name = f'{uuid.uuid4().hex}Schema'
             spec.components.schema(page_schema_name, schema=GetSchema)
+            # 注册Post Schema
+            post_schem_name = resource.PostSchema.__name__
+            # spec.components.schema(post_schem_name, schema=resource.PostSchema)
+            # 原本的schema
             schema_name = resource.Schema.__name__
 
+            # 处理路径
+            uri = resource.uri
+            if '<string:parent_id>' in uri:
+                uri = uri.replace('<string:parent_id>', '{' + f'{resource.Model.__name__}Id' + '}')
+
             spec.path(
-                path=f"{resource.uri}",
+                path=uri,
                 operations=dict(
                     get=dict(
-                        parameters=[{"name": "status",
-                                     "in": "query",
-                                     "description": "Status values that need to be considered for filter",
-                                     "required": True,
-                                     "type": "array",
-                                     "items": {"type": "string", "enum": ["available", "pending", "sold"],
-                                               "default": "available"},
-                                     "collectionFormat": "multi"
-
-                                     }],
                         responses={"200": {"content": {"application/json": {"schema": page_schema_name}}}},
                         description=f"获取{resource.name}的列表"
                     ),
                     post=dict(
+                        requestBody={"content": {"application/json": {"schema": post_schem_name}}},
                         responses={"200": {"content": {"application/json": {"schema": schema_name}}}},
                         description=f"创建{resource.name}"
                     )
                 ),
             )
-
+    pprint(spec.to_dict())
     return spec.to_dict()

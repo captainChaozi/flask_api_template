@@ -1,5 +1,5 @@
 from app.model import Author, Book
-from app.schema.schema import AuthorSchema, BookSchema
+from app.schema.schema import AuthorSchema, BookSchema, AuthorPostSchema
 from ext import ListResource
 
 
@@ -8,6 +8,7 @@ class AuthorListResource(ListResource):
     uri = '/author/'
     Model = Author
     Schema = AuthorSchema
+    PostSchema = AuthorPostSchema
 
 
 class BookListResource(ListResource):
@@ -15,3 +16,4 @@ class BookListResource(ListResource):
     uri = '/author/<string:parent_id>/books'
     Model = Book
     Schema = BookSchema
+    PostSchema = AuthorPostSchema

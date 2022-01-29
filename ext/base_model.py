@@ -156,9 +156,9 @@ class IdMixin(object):
     extend = Column(JSONB, default=dict())
 
 
-class MainMixIn(IdMixin, TimestampMixin, SoftDeleteMixin):
+class BaseMixIn(IdMixin, TimestampMixin, SoftDeleteMixin):
     pass
 
 
-class AllMixIn(MainMixIn, DataPermissionMixin):
+class AllMixIn(BaseMixIn, DataPermissionMixin):
     pass
