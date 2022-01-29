@@ -60,10 +60,10 @@ def create_docs(resources: list) -> dict:
                     'schema': {
                         'type': 'string',
                     },
+                    'required': True
 
                 }
                 global_parameters.append(path_id_parameter)
-
 
             spec.path(
                 path=uri,
@@ -82,12 +82,23 @@ def create_docs(resources: list) -> dict:
             )
         else:
             uri = resource.uri
-            if '<string:resource_id>' in uri:
-                uri = uri.replace('<string:resource_id>', '{' + f'{resource.Model.__name__}Id' + '}')
+
+            path_parameter_name = f'{resource.Model.__name__}Id'
+            uri = uri.replace('<string:resource_id>', '{' + path_parameter_name + '}')
+            path_id_parameter = [{
+                'in': 'path',
+                'name': path_parameter_name,
+                'schema': {
+                    'type': 'string',
+                },
+                'required': True
+
+            }]
             put_schem_name = resource.PutSchema.__name__
 
             spec.path(
                 path=uri,
+                parameters=path_id_parameter,
                 operations=dict(
                     get=dict(
                         responses={"200": {"content": {"application/json": {"schema": schema_name}}}},
@@ -100,5 +111,5 @@ def create_docs(resources: list) -> dict:
                     )
                 )
             )
-    pprint(spec.to_dict())
+    # pprint(spec.to_dict())
     return spec.to_dict()

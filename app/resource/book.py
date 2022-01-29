@@ -33,4 +33,4 @@ class BookDetailResource(DetailResource):
     uri = '/book/<string:resource_id>'
     Model = Book
     Schema = BookSchema
-    PostSchema = BookPostSchema
+    PutSchema = BookPostSchema
