@@ -93,6 +93,7 @@ class BaseService(object):
 class BaseResource(Resource):
     name = ''  # 资源名称
     uri = '/'  # 注册URI
+    parent_name = ''
 
     def __init__(self, data=None, param=None):
         self.db_session = g.db_session
@@ -119,6 +120,7 @@ class BaseResource(Resource):
 class ListResource(BaseResource):
     name = ''  # 资源名称
     uri = '/'  # 注册URI
+    parent_name = ''
     Schema = BaseSchema  # 利用这个schema 来配置
     PostSchema = BaseSchema
     ExcelSchema = ExportSchema

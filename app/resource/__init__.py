@@ -1,6 +1,6 @@
 import inspect
 import sys
-from .book import AuthorListResource, BookListResource
+from .book import AuthorListResource, BookListResource, AuthorDetailResource, BookDetailResource
 from flask_restful import Api
 from ext import BaseResource
 from ext.api.docs import create_docs

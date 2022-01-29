@@ -21,7 +21,7 @@ def create_app():
 
 
 app = create_app()
-
+print(app.url_map)
 
 @app.before_request
 def create_session():
