@@ -39,7 +39,8 @@ def create_docs(resources: list) -> dict:
                 'schema': {
                     'type': 'integer'
                 },
-                'description': '第几页'
+                'description': '第几页',
+                'default': 1
             }
             global_parameters.append(page_parameter)
             per_page_parameter = {
@@ -48,7 +49,8 @@ def create_docs(resources: list) -> dict:
                 'schema': {
                     'type': 'integer'
                 },
-                'description': '每页多少条'
+                'description': '每页多少条',
+                'default': 10
             }
             global_parameters.append(per_page_parameter)
             if '<string:parent_id>' in uri:
