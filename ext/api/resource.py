@@ -94,6 +94,7 @@ class BaseResource(Resource):
     name = ''  # 资源名称
     uri = '/'  # 注册URI
     parent_name = ''
+    docs = None
 
     def __init__(self, data=None, param=None):
         self.db_session = g.db_session
@@ -115,6 +116,10 @@ class BaseResource(Resource):
         self.logger.debug(request.url + " body:" + str(self.data))
 
         super().__init__()
+
+    @classmethod
+    def create_docs(cls):
+        return None
 
 
 class ListResource(BaseResource):
@@ -224,6 +229,10 @@ class ListResource(BaseResource):
                     resources = real_delete(self.Model, i)
                 self.service.after_delete(resources, self.data)
 
+    @classmethod
+    def create_docs(cls):
+        cls.docs.list_docs(cls)
+
 
 class DetailResource(BaseResource):
     Model = None
@@ -261,3 +270,7 @@ class DetailResource(BaseResource):
             resource = self.service.after_put(resource, data)
             schema = self.Schema()
             return schema.dump(resource)
+
+    @classmethod
+    def create_docs(cls):
+        cls.docs.detail_docs(cls)

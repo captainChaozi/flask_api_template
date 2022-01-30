@@ -1,11 +1,13 @@
 from app.model import Author, Book
 from app.schema.schema import AuthorSchema, BookSchema, AuthorPostSchema, BookPostSchema
 from ext import ListResource, DetailResource
+from app.ext_init import docs
 
 
 class AuthorListResource(ListResource):
     name = '作者'
     uri = '/author'
+    docs = docs
     Model = Author
     Schema = AuthorSchema
     PostSchema = AuthorPostSchema
@@ -16,6 +18,7 @@ class AuthorListResource(ListResource):
 class AuthorDetailResource(DetailResource):
     name = '作者'
     uri = '/author/<string:resource_id>'
+    docs = docs
     Model = Author
     Schema = AuthorSchema
     PutSchema = AuthorPostSchema
@@ -24,6 +27,7 @@ class AuthorDetailResource(DetailResource):
 class BookListResource(ListResource):
     name = '书本'
     uri = '/author/<string:parent_id>/books'
+    docs = docs
     Model = Book
     Schema = BookSchema
     PostSchema = BookPostSchema
@@ -33,6 +37,7 @@ class BookListResource(ListResource):
 class BookDetailResource(DetailResource):
     name = '书本'
     uri = '/book/<string:resource_id>'
+    docs = docs
     Model = Book
     Schema = BookSchema
     PutSchema = BookPostSchema

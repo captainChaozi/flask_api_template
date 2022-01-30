@@ -1,23 +1,26 @@
 import uuid
-from pprint import pprint
 
 from apispec import APISpec
 from copy import deepcopy
 from apispec.ext.marshmallow import MarshmallowPlugin
 from flask import current_app
 from marshmallow import fields, Schema
-from .resource import ListResource, DetailResource
 from ext.api.base_schema import PagingSchema, IDSchema
 from sqlalchemy import String, Integer, Date
 
 
-class MyAPISpec(object):
+class Docs(object):
 
-    def __init__(self):
-        self.spec = APISpec(
-            **current_app.config['DOCS_CONFIG'],
-            plugins=[MarshmallowPlugin()], )
+    def __init__(self, app=None):
+        self.spec = None
         self.operations = dict()
+        if app:
+            self.init_app(app)
+
+    def init_app(self, app):
+        self.spec = APISpec(
+            **app.config['DOCS_CONFIG'],
+            plugins=[MarshmallowPlugin()], )
 
     @staticmethod
     def path(url, *parameter_names):
@@ -50,7 +53,7 @@ class MyAPISpec(object):
     def response(schema=None, status="200", description='ok'):
         content = {"description": description}
         if schema:
-            content['content'] = {'application/json':{"schema": schema}}
+            content['content'] = {'application/json': {"schema": schema}}
         return {status: content}
 
     def get_opt(self, description, parameters=None, *response):
@@ -178,10 +181,10 @@ class MyAPISpec(object):
         self.delete_opt(f"删除{resource.name}", None, delete_response)
         self.docs_create(path=path, parameters=[path_id_parameter])
 
-    def common_docs(self, resources):
-        for resource in resources:
-            if issubclass(resource, ListResource):
-                self.list_docs(resource)
-            else:
-                self.detail_docs(resource)
-        return self.to_dict()
+    # def common_docs(self, resources):
+    #     for resource in resources:
+    #         if issubclass(resource, ListResource):
+    #             self.list_docs(resource)
+    #         else:
+    #             self.detail_docs(resource)
+    #     return self.to_dict()

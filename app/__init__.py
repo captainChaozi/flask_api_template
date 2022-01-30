@@ -1,5 +1,5 @@
 from flask import Flask, g
-from app.ext_init import db, get_session, cache
+from app.ext_init import db, get_session, cache, docs
 from app.resource import resource_register
 from config import Config
 from flask_cors import CORS
@@ -11,6 +11,7 @@ from flask_restful import Api
 def create_app():
     flasker = Flask(__name__)
     flasker.config.from_object(Config)
+    docs.init_app(flasker)
     cache.init_app(flasker)
     db.init_app(flasker)
     Marshmallow(flasker)
@@ -21,6 +22,8 @@ def create_app():
 
 
 app = create_app()
+
+
 # print(app.url_map)
 
 @app.before_request
