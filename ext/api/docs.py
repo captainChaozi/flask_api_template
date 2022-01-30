@@ -50,7 +50,7 @@ class MyAPISpec(object):
     def response(schema=None, status="200", description='ok'):
         content = {"description": description}
         if schema:
-            content['application/json'] = {"schema": schema}
+            content['content'] = {'application/json':{"schema": schema}}
         return {status: content}
 
     def get_opt(self, description, parameters=None, *response):
