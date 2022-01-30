@@ -3,7 +3,6 @@ import uuid
 from apispec import APISpec
 from copy import deepcopy
 from apispec.ext.marshmallow import MarshmallowPlugin
-from flask import current_app
 from marshmallow import fields, Schema
 from ext.api.base_schema import PagingSchema, IDSchema
 from sqlalchemy import String, Integer, Date
@@ -13,7 +12,10 @@ class Docs(object):
 
     def __init__(self, app=None):
         self.spec = None
-        self.operations = dict()
+        self.operations_data = dict()
+        self.parameters_data = []
+        self.request_body_data = dict()
+        self.response_data = dict()
         if app:
             self.init_app(app)
 
@@ -29,8 +31,7 @@ class Docs(object):
             url = url.replace(old, '{' + parameter_name + '}')
         return url
 
-    @staticmethod
-    def add_parameter(name, _in, _type, require=False, default=None, describe=None):
+    def parameter(self, name, _in, _type, require=False, default=None, describe=None):
         data = {
             'in': _in,
             'name': name,
@@ -43,98 +44,95 @@ class Docs(object):
             data['schema']['default'] = default
         if describe:
             data['describe'] = describe
-        return data
+        self.parameters_data.append(data)
 
-    @staticmethod
-    def request_body(schema):
-        return {"content": {"application/json": {"schema": schema}}}
+    def request_body(self, schema):
+        self.request_body_data = {"content": {"application/json": {"schema": schema}}}
 
-    @staticmethod
-    def response(schema=None, status="200", description='ok'):
+    def response(self, schema=None, status="200", description='ok'):
         content = {"description": description}
-        if schema:
+        if isinstance(schema, str):
             content['content'] = {'application/json': {"schema": schema}}
-        return {status: content}
+        self.response_data[status] = content
 
-    def get_opt(self, description, parameters=None, *response):
-        response_data = dict()
-        for i in response:
-            response_data.update(i)
+    def get_opt(self, description):
 
-        self.operations['get'] = {
-            'parameters': parameters if parameters else [],
-            'responses': response_data,
+        self.operations_data['get'] = {
+            'parameters': deepcopy(self.parameters_data),
+            'responses': deepcopy(self.response_data),
             'description': description
         }
+        self.parameters_data.clear()
+        self.response_data.clear()
 
-    def put_opt(self, description, request, *response):
-        response_data = dict()
-        for i in response:
-            response_data.update(i)
-        self.operations['put'] = {
-            'requestBody': request,
-            'responses': response_data,
+    def put_opt(self, description):
+
+        self.operations_data['put'] = {
+            'parameters': deepcopy(self.parameters_data),
+            'requestBody': deepcopy(self.request_body_data),
+            'responses': deepcopy(self.response_data),
             'description': description
         }
+        self.parameters_data.clear()
+        self.request_body_data.clear()
+        self.response_data.clear()
 
-    def post_opt(self, description, request, *response):
-        response_data = dict()
-        for i in response:
-            response_data.update(i)
-        self.operations['post'] = {
-            'requestBody': request,
-            'responses': response_data,
+    def post_opt(self, description):
+
+        self.operations_data['post'] = {
+            'parameters': deepcopy(self.parameters_data),
+            'requestBody': deepcopy(self.request_body_data),
+            'responses': deepcopy(self.response_data),
             'description': description
         }
+        self.parameters_data.clear()
+        self.request_body_data.clear()
+        self.response_data.clear()
 
-    def delete_opt(self, description, request=None, *response):
-        response_data = dict()
-        for i in response:
-            response_data.update(i)
+    def delete_opt(self, description):
+
         data = {
-            'responses': response_data,
+            'parameters': deepcopy(self.parameters_data),
+            'responses': deepcopy(self.response_data),
             'description': description
         }
-        if request:
-            data['requestBody'] = request
-        self.operations['delete'] = data
+        if self.request_body_data:
+            data['requestBody'] = deepcopy(self.request_body_data)
+        self.operations_data['delete'] = data
+        self.parameters_data.clear()
+        self.request_body_data.clear()
+        self.response_data.clear()
 
-    def docs_create(self, path, parameters=None):
+    def create(self, path):
         self.spec.path(
             path=path,
-            parameters=parameters if parameters else [],
-            operations=deepcopy(self.operations)
+            operations=deepcopy(self.operations_data)
         )
-        self.operations.clear()
+        self.operations_data.clear()
 
     def to_dict(self):
         return self.spec.to_dict()
 
     def list_docs(self, resource):
+        class GetSchema(Schema):
+            data = fields.Nested(resource.Schema, many=True)
+            paging = fields.Nested(PagingSchema)
 
-        global_parameters = []
-        path = resource.uri
-        if '<string:parent_id>' in path:
-            path = self.path(path, resource.parent_id_field)
-            global_parameters.append(self.add_parameter(resource.parent_id_field,
-                                                        _in='path',
-                                                        _type='string',
-                                                        require=True,
-                                                        ))
-        get_parameters = []
+        get_schema_name = f'{uuid.uuid4().hex}Schema'
 
+        self.spec.components.schema(get_schema_name, schema=GetSchema)
         # page
-        get_parameters.append(self.add_parameter('page', 'query', 'integer', default=1, describe='第几页'))
-        get_parameters.append(self.add_parameter('per_page', 'query', 'integer', default=10, describe='每页多少条'))
+        self.parameter('page', 'query', 'integer', default=1, describe='第几页')
+        self.parameter('per_page', 'query', 'integer', default=10, describe='每页多少条')
 
         # 配置get的查询参数
         # between field
         for i in resource.between_field:
-            get_parameters.append(self.add_parameter(i + '_start', 'query', 'string'))
-            get_parameters.append(self.add_parameter(i + '_end', 'query', 'string'))
+            self.parameter(i + '_start', 'query', 'string')
+            self.parameter(i + '_end', 'query', 'string')
         # search 字段
         if resource.search_field:
-            get_parameters.append(self.add_parameter('search', 'query', 'string'))
+            self.parameter('search', 'query', 'string')
         # 其他字段单独查询
         for name, column in resource.Model.__table__.columns.items():
             column_class = column.type.__class__
@@ -146,40 +144,47 @@ class Docs(object):
                     _type = 'date'
                 else:
                     _type = 'integer'
-                get_parameters.append(self.add_parameter(name, 'query', _type))
+                self.parameter(name, 'query', _type)
+        path = resource.uri
+        if '<string:parent_id>' in path:
+            path = self.path(path, resource.parent_id_field)
+            self.parameter(resource.parent_id_field, 'path', 'string', require=True)
 
-        class GetSchema(Schema):
-            data = fields.Nested(resource.Schema, many=True)
-            paging = fields.Nested(PagingSchema)
+        self.response(get_schema_name)
+        self.get_opt(f"获取{resource.name}的列表")
 
-        get_schema_name = f'{uuid.uuid4().hex}Schema'
+        if '<string:parent_id>' in path:
+            self.parameter(resource.parent_id_field, 'path', 'string', require=True)
+        self.request_body(resource.PostSchema.__name__)
+        self.response(resource.Schema.__name__)
+        self.post_opt(f"创建{resource.name}")
 
-        self.spec.components.schema(get_schema_name, schema=GetSchema)
+        if '<string:parent_id>' in path:
+            self.parameter(resource.parent_id_field, 'path', 'string', require=True)
+        self.request_body(IDSchema.__name__)
+        self.response(description='删除成功')
+        self.delete_opt(f"批量删除{resource.name}")
 
-        # self.schema_register(get_schema_name, GetSchema)
-        get_response = self.response(get_schema_name)
-        self.get_opt(f"获取{resource.name}的列表", get_parameters, get_response)
-        request = self.request_body(resource.PostSchema.__name__)
-        response = self.response(resource.Schema.__name__)
-        self.post_opt(f"创建{resource.name}", request, response)
-        delete_request = self.request_body(IDSchema.__name__)
-        delete_response = self.response(description='删除成功')
-        self.delete_opt(f"批量删除{resource.name}", delete_request, delete_response)
-        self.docs_create(path=path, parameters=global_parameters)
+        self.create(path=path, )
 
     def detail_docs(self, resource):
 
         path_parameter_name = f'{resource.Model.__name__}Id'
         path = self.path(resource.uri, path_parameter_name)
-        path_id_parameter = self.add_parameter(path_parameter_name, 'path', 'string', require=True)
-        get_response = self.response(resource.Schema.__name__)
-        self.get_opt(f"创建{resource.name}", None, get_response)
-        put_request = self.request_body(resource.PutSchema.__name__)
-        put_response = self.response(resource.Schema.__name__)
-        self.put_opt(f"修改{resource.name}", put_request, put_response)
-        delete_response = self.response(description='删除成功')
-        self.delete_opt(f"删除{resource.name}", None, delete_response)
-        self.docs_create(path=path, parameters=[path_id_parameter])
+        self.parameter(path_parameter_name, 'path', 'string', require=True)
+        self.response(resource.Schema.__name__)
+        self.get_opt(f"创建{resource.name}")
+
+        self.parameter(path_parameter_name, 'path', 'string', require=True)
+        self.request_body(resource.PutSchema.__name__)
+        self.response(resource.Schema.__name__)
+        self.put_opt(f"修改{resource.name}")
+
+        self.response(description='删除成功')
+        self.parameter(path_parameter_name, 'path', 'string', require=True)
+        self.delete_opt(f"删除{resource.name}")
+
+        self.create(path=path)
 
     # def common_docs(self, resources):
     #     for resource in resources:
