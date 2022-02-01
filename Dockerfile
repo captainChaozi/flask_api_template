@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY . /app
 
-RUN pip3 install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple
+RUN pip3 install -r requirements.txt
 
 EXPOSE 8000
 
