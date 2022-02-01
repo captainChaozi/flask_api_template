@@ -46,7 +46,7 @@ def check_param(value, _type):
     return value
 
 
-def param_query(models, param=None, like_fields=(), between_field=(), in_field=()):
+def param_query(models, param=None,equal_field=(), like_fields=(), between_field=(), in_field=()):
     param = dict(param)
     param_list = []
     for model in models:
@@ -56,8 +56,10 @@ def param_query(models, param=None, like_fields=(), between_field=(), in_field=(
                     param_list.append(getattr(model, k).like('%{}%'.format(remove_spaces(v))))
                 elif k in in_field:
                     param_list.append(getattr(model, k).in_(v if isinstance(v, list) else [v]))
-                else:
+                elif k in equal_field:
                     param_list.append(getattr(model, k) == v)
+                else:
+                    current_app.logger.warning(f"{k}该字段无法被用作查询条件")
         for i in between_field:
             start = i + '_start'
             end = i + '_end'

@@ -133,6 +133,7 @@ class ListResource(BaseResource):
     Service = BaseService
     parent_id_field = None  # 父ID字段名
     like_field = ()  # 单字段模糊搜索参数
+    equal_field = ()  # 单字段精确匹配
     search_field = ()  # search 参数搜索
     between_field = ()  # 之间查询参数
     in_field = ()  # in 参数搜索
@@ -161,7 +162,8 @@ class ListResource(BaseResource):
 
     def create_query(self):
         if self.param:
-            query_obj = param_query([self.Model], param=self.param, like_fields=self.like_field,
+            query_obj = param_query([self.Model], param=self.param, equal_field=self.equal_field,
+                                    like_fields=self.like_field,
                                     between_field=self.between_field, in_field=self.in_field)
             self.query = self.query.filter(*query_obj)
         if self.search_field and 'search' in self.param:

@@ -136,15 +136,15 @@ class Docs(object):
         # 其他字段单独查询
         for name, column in resource.Model.__table__.columns.items():
             column_class = column.type.__class__
-            if column_class in [String, Date, Integer] and name not in ['id', 'is_delete']:
-
-                if column_class == String:
-                    _type = 'string'
-                elif column_class == Date:
-                    _type = 'date'
-                else:
-                    _type = 'integer'
-                self.parameter(name, 'query', _type)
+            if column_class in [String, Date, Integer] and name not in ['id', 'is_delete'] :
+                if name in resource.equal_field or name in resource.like_field:
+                    if column_class == String:
+                        _type = 'string'
+                    elif column_class == Date:
+                        _type = 'date'
+                    else:
+                        _type = 'integer'
+                    self.parameter(name, 'query', _type)
         path = resource.uri
         if '<string:parent_id>' in path:
             path = self.path(path, resource.parent_id_field)
