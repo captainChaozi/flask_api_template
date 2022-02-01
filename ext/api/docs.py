@@ -173,7 +173,7 @@ class Docs(object):
         path = self.path(resource.uri, path_parameter_name)
         self.parameter(path_parameter_name, 'path', 'string', require=True)
         self.response(resource.Schema.__name__)
-        self.get_opt(f"创建{resource.name}")
+        self.get_opt(f"获取单个{resource.name}")
 
         self.parameter(path_parameter_name, 'path', 'string', require=True)
         self.request_body(resource.PutSchema.__name__)
@@ -182,7 +182,7 @@ class Docs(object):
 
         self.response(description='删除成功')
         self.parameter(path_parameter_name, 'path', 'string', require=True)
-        self.delete_opt(f"删除{resource.name}")
+        self.delete_opt(f"删除单个{resource.name}")
 
         self.create(path=path)
 
