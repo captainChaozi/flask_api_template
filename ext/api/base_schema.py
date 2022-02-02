@@ -6,7 +6,6 @@ from flask import send_file, make_response
 from marshmallow import fields, post_dump
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 from pandas import DataFrame
-
 from config import basedir
 
 

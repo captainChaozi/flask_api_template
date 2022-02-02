@@ -1,4 +1,5 @@
 from flask import g, request, current_app
+from marshmallow import ValidationError
 from sqlalchemy import or_
 from flask_restful import Resource
 from ext.api.base_schema import BaseSchema, ExportSchema
@@ -110,7 +111,7 @@ class BaseResource(Resource):
         else:
             self.data = dict()
             if request.method != 'GET' and request.get_json():
-                self.data = request.json()
+                self.data = request.get_json()
 
         self.logger.debug(request.url + " args:" + str(self.param))
         self.logger.debug(request.url + " body:" + str(self.data))
@@ -202,7 +203,11 @@ class ListResource(BaseResource):
 
     def post(self, parent_id=None):
         schema = self.PostSchema()
-        data = schema.load(self.data)
+        try:
+            data = schema.load(self.data)
+        except ValidationError as e:
+            data = dict()
+            abort(400, message=e.messages)
         for field in self.not_repeat_field:
             repeat = self.query.filter(getattr(self.Model, field) == data.get(field),
                                        self.Model.is_delete == 0).first()
@@ -223,6 +228,7 @@ class ListResource(BaseResource):
     def delete(self, parent_id=None):
         with self.db_session.begin(subtransactions=True):
             ids = self.data['ids']
+            self.data['parent_id'] = parent_id
             for i in ids:
                 self.service.before_delete(self.data)
                 if self.soft_delete:
@@ -257,7 +263,11 @@ class DetailResource(BaseResource):
     def put(self, resource_id):
         resource = self.db_session.query(self.Model).filter(self.Model.id == resource_id).first()
         schema = self.PutSchema()
-        data = schema.load(self.data)
+        try:
+            data = schema.load(self.data)
+        except ValidationError as e:
+            data = dict()
+            abort(400, message=e.messages)
         for field in self.not_repeat_field:
             repeat = self.db_session.query(self.Model).filter(getattr(self.Model, field) == data.get(field),
                                                               self.Model.is_delete == 0).first()
