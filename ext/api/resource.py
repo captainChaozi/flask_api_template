@@ -3,7 +3,7 @@ from marshmallow import ValidationError
 from sqlalchemy import or_
 from flask_restful import Resource
 from ext.api.base_schema import BaseSchema, ExportSchema
-from .api_utils import abort, param_query, paginator, soft_delete, real_delete
+from .api_utils import abort, param_query, paginator, soft_delete, real_delete, get_required
 
 
 class BaseService(object):
@@ -262,7 +262,7 @@ class DetailResource(BaseResource):
 
     def put(self, resource_id):
         resource = self.db_session.query(self.Model).filter(self.Model.id == resource_id).first()
-        schema = self.PutSchema()
+        schema = self.PutSchema(partial=get_required(self.Model))  # 不用每个字段都传
         try:
             data = schema.load(self.data)
         except ValidationError as e:

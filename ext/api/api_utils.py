@@ -46,7 +46,7 @@ def check_param(value, _type):
     return value
 
 
-def param_query(models, param=None,equal_field=(), like_fields=(), between_field=(), in_field=()):
+def param_query(models, param=None, equal_field=(), like_fields=(), between_field=(), in_field=()):
     param = dict(param)
     param_list = []
     for model in models:
@@ -113,7 +113,7 @@ def soft_delete(model, ids):
     db_session = g.db_session
     if not isinstance(ids, list):
         ids = [ids]
-    ins = db_session.query(model).filter(model.id.in_(ids),).all()
+    ins = db_session.query(model).filter(model.id.in_(ids), ).all()
     if not ins:
         abort(400, message="删除的资源不存在")
     for i in ins:
@@ -128,3 +128,13 @@ def real_delete(model, ids):
         ids = [ids]
     db_session.query(model).filter(model.id.in_(ids)).delete(synchronize_session=False)
     return None
+
+
+# 查询所有字段中的必须字段
+
+def get_required(model):
+    res = []
+    for name, column in model.__table__.columns.items():
+        if not column.nullable:
+            res.append(name)
+    return res
