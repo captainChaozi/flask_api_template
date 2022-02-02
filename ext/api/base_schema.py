@@ -26,6 +26,7 @@ class MetaBase:
     dateformat = '%Y-%m-%d'
     datetimeformat = '%Y-%m-%d %H:%M:%S'
     exclude = ('is_delete',)
+    ordered = True
 
 
 class PostMetaBase(MetaBase):
