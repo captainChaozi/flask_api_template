@@ -55,46 +55,53 @@ class Docs(object):
             content['content'] = {'application/json': {"schema": schema}}
         self.response_data[status] = content
 
-    def get_opt(self, description):
+    def get_opt(self, description, tags=None):
 
         self.operations_data['get'] = {
             'parameters': deepcopy(self.parameters_data),
             'responses': deepcopy(self.response_data),
-            'description': description
+            'description': description,
+            "tags": tags if tags else []
         }
         self.parameters_data.clear()
         self.response_data.clear()
 
-    def put_opt(self, description):
+    def put_opt(self, description, tags=None):
 
         self.operations_data['put'] = {
             'parameters': deepcopy(self.parameters_data),
             'requestBody': deepcopy(self.request_body_data),
             'responses': deepcopy(self.response_data),
-            'description': description
+            'description': description,
+            "tags": tags if tags else []
+
         }
         self.parameters_data.clear()
         self.request_body_data.clear()
         self.response_data.clear()
 
-    def post_opt(self, description):
+    def post_opt(self, description, tags=None):
 
         self.operations_data['post'] = {
             'parameters': deepcopy(self.parameters_data),
             'requestBody': deepcopy(self.request_body_data),
             'responses': deepcopy(self.response_data),
-            'description': description
+            'description': description,
+            "tags": tags if tags else []
+
         }
         self.parameters_data.clear()
         self.request_body_data.clear()
         self.response_data.clear()
 
-    def delete_opt(self, description):
+    def delete_opt(self, description, tags=None):
 
         data = {
             'parameters': deepcopy(self.parameters_data),
             'responses': deepcopy(self.response_data),
-            'description': description
+            'description': description,
+            "tags": tags if tags else []
+
         }
         if self.request_body_data:
             data['requestBody'] = deepcopy(self.request_body_data)
@@ -106,7 +113,7 @@ class Docs(object):
     def create(self, path):
         self.spec.path(
             path=path,
-            operations=deepcopy(self.operations_data)
+            operations=deepcopy(self.operations_data),
         )
         self.operations_data.clear()
 
@@ -136,7 +143,7 @@ class Docs(object):
         # 其他字段单独查询
         for name, column in resource.Model.__table__.columns.items():
             column_class = column.type.__class__
-            if column_class in [String, Date, Integer] and name not in ['id', 'is_delete'] :
+            if column_class in [String, Date, Integer] and name not in ['id', 'is_delete']:
                 if name in resource.equal_field or name in resource.like_field:
                     if column_class == String:
                         _type = 'string'
@@ -151,19 +158,19 @@ class Docs(object):
             self.parameter(resource.parent_id_field, 'path', 'string', require=True)
 
         self.response(get_schema_name)
-        self.get_opt(f"获取{resource.name}的列表")
+        self.get_opt(f"获取{resource.name}的列表", tags=[resource.name])
 
         if '<string:parent_id>' in path:
             self.parameter(resource.parent_id_field, 'path', 'string', require=True)
         self.request_body(resource.PostSchema.__name__)
         self.response(resource.Schema.__name__)
-        self.post_opt(f"创建{resource.name}")
+        self.post_opt(f"创建{resource.name}", tags=[resource.name])
 
         if '<string:parent_id>' in path:
             self.parameter(resource.parent_id_field, 'path', 'string', require=True)
         self.request_body(IDSchema.__name__)
         self.response(description='删除成功')
-        self.delete_opt(f"批量删除{resource.name}")
+        self.delete_opt(f"批量删除{resource.name}", tags=[resource.name])
 
         self.create(path=path, )
 
@@ -173,16 +180,16 @@ class Docs(object):
         path = self.path(resource.uri, path_parameter_name)
         self.parameter(path_parameter_name, 'path', 'string', require=True)
         self.response(resource.Schema.__name__)
-        self.get_opt(f"获取单个{resource.name}")
+        self.get_opt(f"获取单个{resource.name}", tags=[resource.name])
 
         self.parameter(path_parameter_name, 'path', 'string', require=True)
         self.request_body(resource.PutSchema.__name__)
         self.response(resource.Schema.__name__)
-        self.put_opt(f"修改{resource.name}")
+        self.put_opt(f"修改{resource.name}", tags=[resource.name])
 
         self.response(description='删除成功')
         self.parameter(path_parameter_name, 'path', 'string', require=True)
-        self.delete_opt(f"删除单个{resource.name}")
+        self.delete_opt(f"删除单个{resource.name}", tags=[resource.name])
 
         self.create(path=path)
 
