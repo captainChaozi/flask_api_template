@@ -8,6 +8,8 @@ from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 from pandas import DataFrame
 from config import basedir
 
+EXCLUDE_FIELDS = ['id', 'create_time', 'modify_time', 'is_delete']
+
 
 class BaseSchema(SQLAlchemyAutoSchema):
     id = fields.String(dump_only=True)
@@ -29,7 +31,7 @@ class MetaBase:
 
 
 class PostMetaBase(MetaBase):
-    exclude = ('id', 'create_time', 'modify_time', 'is_delete')
+    exclude = EXCLUDE_FIELDS
 
 
 class AllSchema(BaseSchema):

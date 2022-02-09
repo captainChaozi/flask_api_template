@@ -1,6 +1,7 @@
 import datetime
 import sys
 import oss2
+import requests
 
 from utils.unique_tools import generate_unique
 
@@ -102,3 +103,9 @@ class AliOSS(object):
             bucket = self.bucket_name
         self.bucket.copy_object(bucket, old, new)
         return self.url_prefix + new
+
+    def pull_file(self, url):
+        res = requests.get(url)
+        file_name = self.file_name(url)
+        self.up_str(file_name, res.content)
+        return self.url_prefix + file_name

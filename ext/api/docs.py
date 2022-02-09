@@ -23,6 +23,13 @@ class Docs(object):
         self.spec = APISpec(
             **app.config['DOCS_CONFIG'],
             plugins=[MarshmallowPlugin()], )
+        api_key_scheme = {"type": "apiKey",
+                          "in": "header",
+                          "name": "Authorization",
+                          "description": "取登录接口中的token,放在每个请求的header里面，建议前端统一拦截",
+                          "example": "customer 8a576b65820846d7af73d6cdabe09e23"
+                          }
+        self.spec.components.security_scheme("api_key", api_key_scheme)
 
     @staticmethod
     def path(url, *parameter_names):
@@ -61,7 +68,8 @@ class Docs(object):
             'parameters': deepcopy(self.parameters_data),
             'responses': deepcopy(self.response_data),
             'description': description,
-            "tags": tags if tags else []
+            "tags": tags if tags else [],
+            'security': [{"api_key": []}]
         }
         self.parameters_data.clear()
         self.response_data.clear()
@@ -73,7 +81,8 @@ class Docs(object):
             'requestBody': deepcopy(self.request_body_data),
             'responses': deepcopy(self.response_data),
             'description': description,
-            "tags": tags if tags else []
+            "tags": tags if tags else [],
+            'security': [{"api_key": []}]
 
         }
         self.parameters_data.clear()
@@ -87,7 +96,8 @@ class Docs(object):
             'requestBody': deepcopy(self.request_body_data),
             'responses': deepcopy(self.response_data),
             'description': description,
-            "tags": tags if tags else []
+            "tags": tags if tags else [],
+            'security': [{"api_key": []}]
 
         }
         self.parameters_data.clear()
@@ -100,7 +110,8 @@ class Docs(object):
             'parameters': deepcopy(self.parameters_data),
             'responses': deepcopy(self.response_data),
             'description': description,
-            "tags": tags if tags else []
+            "tags": tags if tags else [],
+            'security': [{"api_key": []}]
 
         }
         if self.request_body_data:

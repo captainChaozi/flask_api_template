@@ -4,6 +4,8 @@ from sqlalchemy import String, DateTime, Column, Integer
 from sqlalchemy.dialects.postgresql import JSONB
 from flask import g
 
+from utils.unique_tools import generate_id
+
 
 class ModelIterator(six.Iterator):
 
@@ -152,7 +154,7 @@ class SoftDeleteMixin(object):
 
 
 class IdMixin(object):
-    id = Column(String(50), primary_key=True, unique=True, default=uuid.uuid4().hex)
+    id = Column(String(50), primary_key=True, unique=True, default=generate_id)
     extend = Column(JSONB, default=dict())
 
 

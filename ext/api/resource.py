@@ -73,10 +73,11 @@ class BaseService(object):
         """
         return
 
-    def before_put(self, data):
+    def before_put(self, resource, data):
         """
 
         :param data: schema 序列化之后的数据
+        :param resource: 修改的资源
         :return:
         """
         return data
@@ -276,7 +277,7 @@ class DetailResource(BaseResource):
         with self.db_session.begin(subtransactions=True):
             if self.parent_id_field:
                 data['parent_id'] = getattr(resource, self.parent_id_field)
-            data = self.service.before_put(data)
+            data = self.service.before_put(resource,data)
             resource.update(data)
             resource.save(self.db_session)
             resource = self.service.after_put(resource, data)
