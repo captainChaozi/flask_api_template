@@ -85,6 +85,18 @@ services:
     container_name: ${APP_FULL}_debug
     networks:
       - app_network
+  nginx:
+    image: nginx:latest
+    volumes:
+      - './default.conf:/etc/nginx/conf.d/default.conf'
+      - '/data/${APP_FULL}_dist:/app'
+    expose:
+      - 80
+    ports:
+      - "${PORT}00:80"
+    container_name: ${APP_FULL}_nginx
+    networks:
+      - app_network
 
 networks:
   app_network:
