@@ -86,9 +86,8 @@ services:
     networks:
       - app_network
   nginx:
-    image: nginx:latest
+    image: chaozi/nginx:1.21
     volumes:
-      - './default.conf:/etc/nginx/conf.d/'
       - '/data/${APP_FULL}_dist:/app'
     expose:
       - 80
