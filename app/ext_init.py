@@ -1,7 +1,6 @@
-from flask import current_app
+from flask_sqlalchemy import SQLAlchemy
 
 from ext import BaseModel, RedisCache
-from flask_sqlalchemy import SQLAlchemy
 from ext import Docs
 
 db = SQLAlchemy(model_class=BaseModel)
@@ -9,6 +8,8 @@ db = SQLAlchemy(model_class=BaseModel)
 cache = RedisCache()
 
 docs = Docs()
+
+
 
 
 def get_session():

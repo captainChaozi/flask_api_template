@@ -1,11 +1,12 @@
 import uuid
+from copy import deepcopy
 
 from apispec import APISpec
-from copy import deepcopy
 from apispec.ext.marshmallow import MarshmallowPlugin
 from marshmallow import fields, Schema
-from ext.api.base_schema import PagingSchema, IDSchema
 from sqlalchemy import String, Integer, Date
+
+from ext.api.base_schema import PagingSchema, IDSchema
 
 
 class Docs(object):
@@ -16,6 +17,7 @@ class Docs(object):
         self.parameters_data = []
         self.request_body_data = dict()
         self.response_data = dict()
+        self.tag_group = dict()
         if app:
             self.init_app(app)
 
@@ -45,7 +47,7 @@ class Docs(object):
             'schema': {
                 'type': _type,
             },
-            'required': require
+            'required': require,
         }
         if default is not None:
             data['schema']['default'] = default
@@ -121,15 +123,23 @@ class Docs(object):
         self.request_body_data.clear()
         self.response_data.clear()
 
-    def create(self, path):
+    def create(self, path, tags=None, tag_group=None):
         self.spec.path(
             path=path,
             operations=deepcopy(self.operations_data),
         )
         self.operations_data.clear()
+        if tag_group and tags:
+            self.tag_group.setdefault(tag_group, []).append(tags)
 
     def to_dict(self):
-        return self.spec.to_dict()
+        data = self.spec.to_dict()
+        group_data = []
+        # print(self.tag_group)
+        for group_name, tags in self.tag_group.items():
+            group_data.append({"name": group_name, 'tags': list(set(tags))})
+        data['x-tagGroups'] = group_data
+        return data
 
     def list_docs(self, resource):
         class GetSchema(Schema):
@@ -162,7 +172,10 @@ class Docs(object):
                         _type = 'date'
                     else:
                         _type = 'integer'
-                    self.parameter(name, 'query', _type)
+                    if column.doc:
+                        self.parameter(name, 'query', _type, describe=column.doc)
+                    else:
+                        self.parameter(name, 'query', _type)
         path = resource.uri
         if '<string:parent_id>' in path:
             path = self.path(path, resource.parent_id_field)
@@ -172,7 +185,8 @@ class Docs(object):
         self.get_opt(f"获取{resource.name}的列表", tags=[resource.name])
 
         if '<string:parent_id>' in path:
-            self.parameter(resource.parent_id_field, 'path', 'string', require=True)
+            self.parameter(resource.parent_id_field, 'path', 'string', require=True,
+                           describe=resource.parent_name + "ID")
         self.request_body(resource.PostSchema.__name__)
         self.response(resource.Schema.__name__)
         self.post_opt(f"创建{resource.name}", tags=[resource.name])
@@ -183,7 +197,7 @@ class Docs(object):
         self.response(description='删除成功')
         self.delete_opt(f"批量删除{resource.name}", tags=[resource.name])
 
-        self.create(path=path, )
+        self.create(path=path, tags=resource.name, tag_group=resource.tag_group)
 
     def detail_docs(self, resource):
 
@@ -202,7 +216,7 @@ class Docs(object):
         self.parameter(path_parameter_name, 'path', 'string', require=True)
         self.delete_opt(f"删除单个{resource.name}", tags=[resource.name])
 
-        self.create(path=path)
+        self.create(path=path, tags=resource.name, tag_group=resource.tag_group)
 
     # def common_docs(self, resources):
     #     for resource in resources:

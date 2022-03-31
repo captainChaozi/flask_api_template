@@ -1,8 +1,9 @@
 import datetime
 import logging
-from sqlalchemy import Integer, DateTime, Date, DECIMAL
+
 from flask import abort as original_flask_abort
 from flask import request, g, current_app
+from sqlalchemy import Integer, DateTime, Date, DECIMAL
 from werkzeug.exceptions import HTTPException
 
 logger = logging.getLogger('abort')
@@ -56,10 +57,11 @@ def param_query(models, param=None, equal_field=(), like_fields=(), between_fiel
                     param_list.append(getattr(model, k).like('%{}%'.format(remove_spaces(v))))
                 elif k in in_field:
                     param_list.append(getattr(model, k).in_(v if isinstance(v, list) else [v]))
-                elif k in equal_field:
-                    param_list.append(getattr(model, k) == v)
+                # elif k in equal_field:
+                #     param_list.append(getattr(model, k) == v)
                 else:
-                    current_app.logger.warning(f"{k}该字段无法被用作查询条件")
+                    param_list.append(getattr(model, k) == v)
+
         for i in between_field:
             start = i + '_start'
             end = i + '_end'
@@ -105,7 +107,7 @@ def abort(http_status_code, **kwargs):
     except HTTPException as e:
         if len(kwargs):
             e.data = kwargs
-            current_app.logger.info(kwargs)
+            # current_app.logger.info(kwargs)
         raise
 
 

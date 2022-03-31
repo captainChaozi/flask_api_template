@@ -1,10 +1,11 @@
+import json
+import logging
+import random
+import sys
+
 from aliyunsdkcore.client import AcsClient
 from aliyunsdkcore.request import CommonRequest
 from flask import Flask
-import logging
-import sys
-import random
-import json
 
 logger = logging.getLogger(__name__)
 

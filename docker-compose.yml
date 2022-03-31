@@ -29,14 +29,16 @@ services:
       - app_network
   api:
     image: ${IMAGE_NAME}
+    restart: always
     environment:
-      APP_PORT: 20301
-      DB_HOST: ${APP_FULL}_db
+      DB_HOST: pgm-uf60ad6m2t923437194060.pg.rds.aliyuncs.com
       DB_PORT: 5432
       DB_PASSWORD: ${DB_PASSWORD}
+      DB_USER: xijia
       REDIS_HOST: ${APP_FULL}_redis
       REDIS_PORT: 6379
-      LOG_LEVEL: info
+      REDIS_DB: 0
+#      LOG_LEVEL: debug
     expose:
       - 80
     ports:
@@ -46,13 +48,15 @@ services:
       - app_network
   celery:
     image: ${IMAGE_NAME}
+    restart: always
     environment:
-      APP_PORT: 20301
-      DB_HOST: ${APP_FULL}_db
+      DB_HOST: pgm-uf60ad6m2t923437194060.pg.rds.aliyuncs.com
       DB_PORT: 5432
       DB_PASSWORD: ${DB_PASSWORD}
+      DB_USER: xijia
       REDIS_HOST: ${APP_FULL}_redis
       REDIS_PORT: 6379
+      REDIS_DB: 0
       LOG_LEVEL: info
       RUN: celery
     container_name: ${APP_FULL}_celery
@@ -60,6 +64,7 @@ services:
       - app_network
   docs:
     image: redocly/redoc
+    restart: always
     environment:
       SPEC_URL: "${DOCS_URI}"
     expose:
@@ -69,26 +74,31 @@ services:
     container_name: ${APP_FULL}_docs
     networks:
       - app_network
-  debug:
-    image: ${IMAGE_NAME}
+  oauth:
+    image: chaozi/oauth:v1.0.0
+    restart: always
     environment:
-      DB_HOST: ${APP_FULL}_db
+      DB_HOST: pgm-uf60ad6m2t923437194060.pg.rds.aliyuncs.com
       DB_PORT: 5432
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: oauth
+      DB_USER: xijia
       REDIS_HOST: ${APP_FULL}_redis
       REDIS_PORT: 6379
-      DB_PASSWORD: ${DB_PASSWORD}
-      RUN: debug
+      REDIS_DB: 0
     expose:
-      - 80
+      - 8000
     ports:
-      - "${PORT}05:80"
-    container_name: ${APP_FULL}_debug
+      - "${PORT}06:8000"
+    container_name: ${APP_FULL}_oauth
     networks:
       - app_network
   nginx:
-    image: chaozi/nginx:1.21
+    image: chaozi/nginx:alpine
+    restart: always
     volumes:
       - '/data/${APP_FULL}_dist:/app'
+      - '/data/${APP_FULL}_nginx:/etc/nginx/conf.d'
     expose:
       - 80
     ports:
@@ -99,5 +109,5 @@ services:
 
 networks:
   app_network:
-    external:
-      name: ${APP_FULL}
+#    external:
+#      name: ${APP_FULL}

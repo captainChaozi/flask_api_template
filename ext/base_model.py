@@ -1,8 +1,9 @@
-import six, datetime, uuid
-from sqlalchemy.orm import object_mapper
+import datetime
+import six
+from flask import g
 from sqlalchemy import String, DateTime, Column, Integer
 from sqlalchemy.dialects.postgresql import JSONB
-from flask import g
+from sqlalchemy.orm import object_mapper
 
 from utils.unique_tools import generate_id
 

@@ -1,5 +1,6 @@
 import datetime
 import sys
+
 import oss2
 import requests
 
@@ -92,6 +93,7 @@ class AliOSS(object):
     @staticmethod
     def file_name(old, code=None):
         h = old.split('.')[-1]
+        h = 'PNG'
         file_name = generate_unique(10)
         today = str(datetime.date.today())
         if code:

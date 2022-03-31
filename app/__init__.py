@@ -1,11 +1,13 @@
 from flask import Flask, g
-from app.ext_init import db, get_session, cache, docs
-from app.resource import resource_register
-from config import Config
 from flask_cors import CORS
 from flask_marshmallow import Marshmallow
 from flask_migrate import Migrate
 from flask_restful import Api
+
+from app.ext_init import db, get_session, cache, docs
+from app.resource import resource_register
+from app.script import script
+from config import Config
 
 
 def create_app():
@@ -15,16 +17,15 @@ def create_app():
     cache.init_app(flasker)
     db.init_app(flasker)
     Marshmallow(flasker)
-    CORS(flasker)
     Migrate(flasker, db)
     resource_register(Api(flasker))
+    CORS(flasker, supports_credentials=True)
     return flasker
 
 
 app = create_app()
+app.cli.add_command(script)
 
-
-# print(app.url_map)
 
 @app.before_request
 def create_session():

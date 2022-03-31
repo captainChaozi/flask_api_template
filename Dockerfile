@@ -1,10 +1,12 @@
-FROM chaozi/python-vim:3.10-flask
+FROM chaozi/python-flask:3.8
 
 WORKDIR /app
 
 COPY . /app
 
 RUN pip3 install -r requirements.txt
+
+RUN cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 
 EXPOSE 8000
 

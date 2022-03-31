@@ -1,6 +1,8 @@
 import json
-import redis
 from datetime import datetime
+
+import redis
+
 from utils.json_tool import CusJsonEncoder
 
 

@@ -1,11 +1,13 @@
 import os
 import uuid
 from urllib.parse import quote
-from marshmallow import Schema
+
 from flask import send_file, make_response
+from marshmallow import Schema
 from marshmallow import fields, post_dump
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 from pandas import DataFrame
+
 from config import basedir
 
 EXCLUDE_FIELDS = ['id', 'create_time', 'modify_time', 'is_delete']
@@ -48,10 +50,10 @@ class PagingSchema(Schema):
     total_number = fields.Integer()
 
 
-class ExportSchema(BaseSchema):
+class ExportSchema(Schema):
 
     @post_dump(pass_many=True)
-    def data_excel(self, data):
+    def data_excel(self, data,many=True):
         data_frame = DataFrame.from_records(data=data)
         file_name = uuid.uuid4().hex + '.xls'
         file_path = os.path.join(basedir, file_name)

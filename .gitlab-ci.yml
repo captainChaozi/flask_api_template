@@ -8,10 +8,10 @@ stages:
 variables:
   APP: xijia
   IMAGE_NAME: ${APP}_api:${CI_COMMIT_REF_NAME}
-  DB_PASSWORD: chaozi
+  DB_PASSWORD: "****"
   APP_FULL: ${APP}_${CI_COMMIT_REF_NAME}
-  PORT: 201
-  DOCS_URI: "http://139.196.85.124:20101/apidocs.json"
+  PORT: 202
+  DOCS_URI: "http://dev-api.com/apidocs.json"
 
 
 build:
@@ -32,3 +32,5 @@ deploy:
     - xijia
   script:
     - docker-compose up -d
+    - docker-compose restart nginx
+

@@ -1,7 +1,8 @@
 from flask import g, request, current_app
+from flask_restful import Resource
 from marshmallow import ValidationError
 from sqlalchemy import or_
-from flask_restful import Resource
+
 from ext.api.base_schema import BaseSchema, ExportSchema
 from .api_utils import abort, param_query, paginator, soft_delete, real_delete, get_required
 
@@ -94,9 +95,10 @@ class BaseService(object):
 
 class BaseResource(Resource):
     name = ''  # 资源名称
-    uri = '/'  # 注册URI
+    uri = '/aaa'  # 注册URI
     parent_name = ''
     docs = None
+    tag_group = ''
 
     def __init__(self, data=None, param=None):
         self.db_session = g.db_session
@@ -125,8 +127,6 @@ class BaseResource(Resource):
 
 
 class ListResource(BaseResource):
-    name = ''  # 资源名称
-    uri = '/'  # 注册URI
     parent_name = ''
     Schema = BaseSchema  # 利用这个schema 来配置
     PostSchema = BaseSchema
@@ -190,8 +190,8 @@ class ListResource(BaseResource):
         # 可以定制化的写query对象
         if self.service.query:
             self.query = self.service.query
-        self.create_order_by()
         self.create_query()
+        self.create_order_by()
         if parent_id:
             self.query = self.query.filter(getattr(self.Model, self.parent_id_field) == parent_id)
 

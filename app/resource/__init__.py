@@ -1,9 +1,10 @@
 import inspect
 import sys
-from .book import AuthorListResource, BookListResource, AuthorDetailResource, BookDetailResource, PetResource
+
 from flask_restful import Api
-from ext import BaseResource
+
 from app.ext_init import docs
+from ext import BaseResource
 
 
 def collect_resource():
@@ -11,6 +12,11 @@ def collect_resource():
     for _, resource in inspect.getmembers(sys.modules[__name__], inspect.isclass):
         if issubclass(resource, BaseResource) and resource != BaseResource:
             resources.append(resource)
+    sort = {'ListResource': 1,
+            'DetailResource': 2,
+            'BaseResource': 3
+            }
+    resources.sort(key=lambda obj: sort[obj.__base__.__name__])
     return resources
 
 
@@ -20,7 +26,8 @@ RESOURCE = collect_resource()
 class APIDOCSResource(BaseResource):
     uri = '/apidocs.json'
 
-    def get(self, parent_id=None):
+    @staticmethod
+    def get():
         return docs.to_dict()
 
 
