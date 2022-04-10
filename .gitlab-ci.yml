@@ -2,35 +2,30 @@ image: docker:latest
 
 
 stages:
-  - build
   - deploy
 
 variables:
   APP: xijia
   IMAGE_NAME: ${APP}_api:${CI_COMMIT_REF_NAME}
-  DB_PASSWORD: "****"
   APP_FULL: ${APP}_${CI_COMMIT_REF_NAME}
-  PORT: 202
-  DOCS_URI: "http://dev-api.com/apidocs.json"
 
 
-build:
-  stage: build
-  retry: 2
-  tags:
-    - xijia
-  script:
-    - docker build -t ${IMAGE_NAME} .
 
-
-## 通过gitlab创建 数据库 redis
 deploy:
   image: tmaier/docker-compose
   stage: deploy
   retry: 2
   tags:
     - xijia
+  variables:
+    PORT: 202
+    DOCS_URI: "http://dev-api.com/apidocs.json"
+    DB_HOST: db
+    DB_USER: chaozi
+    DB_PASSWORD: chaozi
   script:
+    - mkdir ${APP_FULL} && cp ./docker-compose.yml ./${APP_FULL} && cd ${APP_FULL}
     - docker-compose up -d
     - docker-compose restart nginx
-
+#  only:
+#    - uat

@@ -5,6 +5,7 @@ services:
     image: postgres:14
     environment:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_USER: ${DB_USER}
       PGDATA: /data
     volumes:
       - "/data/${APP_FULL}:/data"
@@ -28,17 +29,18 @@ services:
     networks:
       - app_network
   api:
+    build: .
     image: ${IMAGE_NAME}
     restart: always
     environment:
-      DB_HOST: pgm-uf60ad6m2t923437194060.pg.rds.aliyuncs.com
+      DB_HOST: ${DB_HOST}
       DB_PORT: 5432
       DB_PASSWORD: ${DB_PASSWORD}
-      DB_USER: xijia
+      DB_USER: ${DB_USER}
       REDIS_HOST: ${APP_FULL}_redis
       REDIS_PORT: 6379
       REDIS_DB: 0
-#      LOG_LEVEL: debug
+      LOG_LEVEL: debug
     expose:
       - 80
     ports:
@@ -50,10 +52,10 @@ services:
     image: ${IMAGE_NAME}
     restart: always
     environment:
-      DB_HOST: pgm-uf60ad6m2t923437194060.pg.rds.aliyuncs.com
+      DB_HOST: ${DB_HOST}
       DB_PORT: 5432
       DB_PASSWORD: ${DB_PASSWORD}
-      DB_USER: xijia
+      DB_USER: ${DB_USER}
       REDIS_HOST: ${APP_FULL}_redis
       REDIS_PORT: 6379
       REDIS_DB: 0
@@ -78,11 +80,11 @@ services:
     image: chaozi/oauth:v1.0.0
     restart: always
     environment:
-      DB_HOST: pgm-uf60ad6m2t923437194060.pg.rds.aliyuncs.com
+      DB_HOST: ${DB_HOST}
       DB_PORT: 5432
       DB_PASSWORD: ${DB_PASSWORD}
       DB_NAME: oauth
-      DB_USER: xijia
+      DB_USER: ${DB_USER}
       REDIS_HOST: ${APP_FULL}_redis
       REDIS_PORT: 6379
       REDIS_DB: 0
