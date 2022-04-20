@@ -1,5 +1,5 @@
 alembic==1.7.5
-alipay-sdk-python==3.3.398
+alipay-sdk-python==3.6.72
 aliyun-python-sdk-core==2.13.35
 aliyun-python-sdk-kms==2.15.0
 amqp==5.0.9
@@ -19,10 +19,13 @@ click==8.0.3
 click-didyoumean==0.3.0
 click-plugins==1.1.1
 click-repl==0.2.0
+commerce==0.1.dev0
 crcmod==1.7
 cryptography==36.0.1
 decorator==5.1.1
 Deprecated==1.2.13
+docs==0.1.0
+et-xmlfile==1.1.0
 executing==0.8.2
 Flask==2.0.2
 Flask-Cors==3.0.10
@@ -53,6 +56,7 @@ matplotlib-inline==0.1.3
 mistune==2.0.2
 mypy-extensions==0.4.3
 numpy==1.22.1
+openpyxl==3.0.9
 optionaldict==0.1.2
 oss2==2.15.0
 packaging==21.3
@@ -93,7 +97,6 @@ wcwidth==0.2.5
 wechatpy==1.8.18
 Werkzeug==2.0.2
 wrapt==1.13.3
-xlwt==1.3.0
 xmltodict==0.12.0
 zope.event==4.5.0
 zope.interface==5.4.0

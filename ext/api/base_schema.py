@@ -55,7 +55,7 @@ class ExportSchema(Schema):
     @post_dump(pass_many=True)
     def data_excel(self, data,many=True):
         data_frame = DataFrame.from_records(data=data)
-        file_name = uuid.uuid4().hex + '.xls'
+        file_name = uuid.uuid4().hex + '.xlsx'
         file_path = os.path.join(basedir, file_name)
         data_frame.to_excel(excel_writer=file_path, index=False)
         response = make_response(send_file(file_path))
