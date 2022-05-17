@@ -172,10 +172,7 @@ class Docs(object):
                         _type = 'date'
                     else:
                         _type = 'integer'
-                    if column.doc:
-                        self.parameter(name, 'query', _type, describe=column.doc)
-                    else:
-                        self.parameter(name, 'query', _type)
+                    self.parameter(name, 'query', _type)
         path = resource.uri
         if '<string:parent_id>' in path:
             path = self.path(path, resource.parent_id_field)
@@ -219,9 +216,9 @@ class Docs(object):
         self.create(path=path, tags=resource.name, tag_group=resource.tag_group)
 
     # def common_docs(self, resources):
-    #     for resource in resources:
-    #         if issubclass(resource, ListResource):
-    #             self.list_docs(resource)
+    #     for api in resources:
+    #         if issubclass(api, ListResource):
+    #             self.list_docs(api)
     #         else:
-    #             self.detail_docs(resource)
+    #             self.detail_docs(api)
     #     return self.to_dict()

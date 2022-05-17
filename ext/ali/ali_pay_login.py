@@ -1,20 +1,17 @@
 from alipay.aop.api.AlipayClientConfig import AlipayClientConfig
 from alipay.aop.api.DefaultAlipayClient import DefaultAlipayClient
+from alipay.aop.api.request.AlipayCommerceSportsFacepayskinReceiveRequest import \
+    AlipayCommerceSportsFacepayskinReceiveRequest
 from alipay.aop.api.request.AlipaySystemOauthTokenRequest import AlipaySystemOauthTokenRequest
+from alipay.aop.api.response.AlipayCommerceSportsFacepayskinReceiveResponse import \
+    AlipayCommerceSportsFacepayskinReceiveResponse
 from alipay.aop.api.response.AlipaySystemOauthTokenResponse import AlipaySystemOauthTokenResponse
 
-# -*- coding: utf-8 -*-
-'''
-Created on 2017-12-20
-
-@author: liuqun
-'''
 import base64
 
 from alipay.aop.api.constant.CommonConstants import PYTHON_VERSION_3
 from alipay.aop.api.exception.Exception import RequestException
 from Crypto.Cipher import AES
-
 
 BLOCK_SIZE = AES.block_size
 pad = lambda s, length: s + (BLOCK_SIZE - length % BLOCK_SIZE) * chr(BLOCK_SIZE - length % BLOCK_SIZE)
@@ -57,7 +54,6 @@ def aes_decrypt_content(encrypted_content, encrypt_key, charset):
     if PYTHON_VERSION_3:
         content = content.decode(charset)
     return content
-
 
 
 class AlipayOauth(object):
@@ -109,6 +105,37 @@ class AlipayOauth(object):
                 self.app.logger.error(
                     response.code + "," + response.msg + "," + response.sub_code + "," + response.sub_msg)
                 return None
+
+    def get_skin(self, alipay_id):
+        alipay_client_config = AlipayClientConfig()
+        alipay_client_config.server_url = 'https://openapi.alipay.com/gateway.do'
+        alipay_client_config.app_id = self.app_id
+        alipay_client_config.app_private_key = self.app_private_key  # 应用私钥
+        alipay_client_config.alipay_public_key = self.alipay_public_key  # 支付宝公钥
+        client = DefaultAlipayClient(alipay_client_config, self.app.logger)
+        request = AlipayCommerceSportsFacepayskinReceiveRequest()
+        request.biz_content = dict(
+            user_id=alipay_id,
+            skin_id=2138,
+            expire_date='2025-10-10'
+        )
+        try:
+            response_content = client.execute(request)
+        except Exception as e:
+            self.app.logger.error(e)
+            response_content = None
+
+        if response_content:
+            # 解析响应结果
+            response = AlipayCommerceSportsFacepayskinReceiveResponse()
+            response.parse_response_content(response_content)
+
+            if response.is_success():
+                return True
+            else:
+                self.app.logger.error(
+                    response.code + "," + response.msg + "," + response.sub_code + "," + response.sub_msg)
+                return False
 
     def decrypt_phone(self, message):
         charset = 'utf-8'

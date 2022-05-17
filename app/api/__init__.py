@@ -31,7 +31,7 @@ class APIDOCSResource(BaseResource):
         return docs.to_dict()
 
 
-def resource_register(api: Api):
+def api_register(api: Api):
     for resource in RESOURCE:
         if resource.docs:
             resource.create_docs()

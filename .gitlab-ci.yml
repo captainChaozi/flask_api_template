@@ -5,9 +5,15 @@ stages:
   - deploy
 
 variables:
-  APP: xijia
+  APP: template
   IMAGE_NAME: ${APP}_api:${CI_COMMIT_REF_NAME}
   APP_FULL: ${APP}_${CI_COMMIT_REF_NAME}
+  DB_USER: chaozi
+  DB_PASSWORD: sdad12sac$!addQQ
+  DB_HOST: db
+  DB_NAME: chaozi
+  DOCS_URI: "http://124.221.131.183:20101/apidocs.json"
+
 
 
 
@@ -16,16 +22,10 @@ deploy:
   stage: deploy
   retry: 2
   tags:
-    - xijia
+    - template
   variables:
-    PORT: 202
-    DOCS_URI: "http://dev-api.com/apidocs.json"
-    DB_HOST: db
-    DB_USER: chaozi
-    DB_PASSWORD: chaozi
+    PORT: 201
   script:
     - mkdir ${APP_FULL} && cp ./docker-compose.yml ./${APP_FULL} && cd ${APP_FULL}
     - docker-compose up -d
     - docker-compose restart nginx
-#  only:
-#    - uat

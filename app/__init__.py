@@ -5,7 +5,7 @@ from flask_migrate import Migrate
 from flask_restful import Api
 
 from app.ext_init import db, get_session, cache, docs
-from app.resource import resource_register
+from app.api import api_register
 from app.script import script
 from config import Config
 
@@ -18,7 +18,7 @@ def create_app():
     db.init_app(flasker)
     Marshmallow(flasker)
     Migrate(flasker, db)
-    resource_register(Api(flasker))
+    api_register(Api(flasker))
     CORS(flasker, supports_credentials=True)
     return flasker
 
