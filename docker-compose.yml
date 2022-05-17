@@ -78,7 +78,7 @@ services:
     networks:
       - app_network
   nginx:
-    image: chaozi/nginx:alpine
+    image: ${BACK_IMAGE_NAME}
     restart: always
     expose:
       - 80
