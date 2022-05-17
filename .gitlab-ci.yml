@@ -23,8 +23,6 @@ build:
     - template
   script:
     - docker build -t ${IMAGE_NAME} .
-  only:
-    - dev
 
 deploy:
   image: tmaier/docker-compose
