@@ -7,11 +7,11 @@ from flask_restful import Api
 from app.ext_init import db, get_session, cache, docs
 from app.api import api_register
 from app.script import script
-from config import Config
+from config import Config, page_dir
 
 
 def create_app():
-    flasker = Flask(__name__)
+    flasker = Flask(__name__, static_folder=page_dir, static_url_path='/page')
     flasker.config.from_object(Config)
     docs.init_app(flasker)
     cache.init_app(flasker)
@@ -25,6 +25,8 @@ def create_app():
 
 app = create_app()
 app.cli.add_command(script)
+
+print(app.url_map)
 
 
 @app.before_request

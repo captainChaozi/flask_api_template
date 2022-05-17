@@ -4,7 +4,7 @@ from datetime import timedelta
 from celery.schedules import crontab
 
 basedir = os.path.abspath(os.path.dirname(__file__))
-docs_file = os.path.join(basedir, 'docs', 'api.yaml')
+page_dir = os.path.join(basedir, 'pages')
 pem = os.path.join(basedir, 'pem')
 
 

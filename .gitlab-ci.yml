@@ -24,7 +24,6 @@ build:
     - chaozi
   script:
     - docker build -t ${API_IMAGE_NAME} .
-    - docker build -t ${BACK_IMAGE_NAME} ./amis
 
 deploy:
   image: tmaier/docker-compose
