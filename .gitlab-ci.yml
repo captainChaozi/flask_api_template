@@ -7,7 +7,8 @@ stages:
 
 variables:
   APP: template
-  IMAGE_NAME: ${APP}_api:${CI_COMMIT_REF_NAME}
+  API_IMAGE_NAME: ${APP}_api:${CI_COMMIT_REF_NAME}
+  BACK_IMAGE_NAME: ${APP}_back:${CI_COMMIT_REF_NAME}
   APP_FULL: ${APP}_${CI_COMMIT_REF_NAME}
   DB_USER: chaozi
   DB_PASSWORD: sdad12sac$!addQQ
@@ -22,7 +23,8 @@ build:
   tags:
     - template
   script:
-    - docker build -t ${IMAGE_NAME} .
+    - docker build -t ${API_IMAGE_NAME} .
+    - docker build -t ${BACK_IMAGE_NAME} ./amis
 
 deploy:
   image: tmaier/docker-compose

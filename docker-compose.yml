@@ -31,7 +31,7 @@ services:
       - app_network
   api:
     build: .
-    image: ${IMAGE_NAME}
+    image: ${API_IMAGE_NAME}
     restart: always
     environment:
       DB_HOST: ${DB_HOST}
@@ -50,7 +50,7 @@ services:
     networks:
       - app_network
   celery:
-    image: ${IMAGE_NAME}
+    image: ${API_IMAGE_NAME}
     restart: always
     environment:
       DB_HOST: ${DB_HOST}
@@ -77,31 +77,9 @@ services:
     container_name: ${APP_FULL}_docs
     networks:
       - app_network
-  oauth:
-    image: chaozi/oauth:v1.0.0
-    restart: always
-    environment:
-      DB_HOST: ${DB_HOST}
-      DB_PORT: 5432
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_NAME: oauth
-      DB_USER: ${DB_USER}
-      REDIS_HOST: ${APP_FULL}_redis
-      REDIS_PORT: 6379
-      REDIS_DB: 0
-    expose:
-      - 8000
-    ports:
-      - "${PORT}06:8000"
-    container_name: ${APP_FULL}_oauth
-    networks:
-      - app_network
   nginx:
     image: chaozi/nginx:alpine
     restart: always
-    volumes:
-      - '/data/${APP_FULL}_dist:/app'
-      - '/data/${APP_FULL}_nginx:/etc/nginx/conf.d'
     expose:
       - 80
     ports:
@@ -112,5 +90,3 @@ services:
 
 networks:
   app_network:
-#    external:
-#      name: ${APP_FULL}
