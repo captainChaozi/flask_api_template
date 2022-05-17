@@ -21,7 +21,7 @@ build:
   stage: build
   retry: 2
   tags:
-    - template
+    - chaozi
   script:
     - docker build -t ${API_IMAGE_NAME} .
     - docker build -t ${BACK_IMAGE_NAME} ./amis
@@ -31,7 +31,7 @@ deploy:
   stage: deploy
   retry: 2
   tags:
-    - template
+    - chaozi
   variables:
     PORT: 201
   script:
