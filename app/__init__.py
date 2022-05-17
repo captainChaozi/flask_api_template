@@ -26,7 +26,6 @@ def create_app():
 app = create_app()
 app.cli.add_command(script)
 
-print(app.url_map)
 
 
 @app.before_request
