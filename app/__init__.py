@@ -11,7 +11,7 @@ from config import Config, page_dir
 
 
 def create_app():
-    flasker = Flask(__name__, static_folder=page_dir, static_url_path='/page')
+    flasker = Flask(__name__, static_folder=page_dir, static_url_path='/pages')
     flasker.config.from_object(Config)
     docs.init_app(flasker)
     cache.init_app(flasker)
