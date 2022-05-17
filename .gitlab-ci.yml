@@ -2,8 +2,8 @@ image: docker:latest
 
 
 stages:
-  - deploy
   - build
+  - deploy
 
 variables:
   APP: template
