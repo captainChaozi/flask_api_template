@@ -3,6 +3,7 @@ image: docker:latest
 
 stages:
   - deploy
+  - build
 
 variables:
   APP: template
@@ -15,7 +16,15 @@ variables:
   DOCS_URI: "http://124.221.131.183:20101/apidocs.json"
 
 
-
+build:
+  stage: build
+  retry: 2
+  tags:
+    - template
+  script:
+    - docker build -t ${IMAGE_NAME} .
+  only:
+    - dev
 
 deploy:
   image: tmaier/docker-compose
