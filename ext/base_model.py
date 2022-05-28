@@ -138,16 +138,16 @@ def get_user_name():
 
 
 class TimestampMixin(object):
-    create_time = Column(DateTime, default=datetime.datetime.now)
-    modify_time = Column(DateTime, onupdate=datetime.datetime.now, default=datetime.datetime.now)
+    create_time = Column(DateTime, default=datetime.datetime.now, doc='创建时间')
+    modify_time = Column(DateTime, onupdate=datetime.datetime.now, default=datetime.datetime.now, doc='修改时间')
 
 
 class DataPermissionMixin(object):
-    user_id = Column(String(50), nullable=True, default=get_user)
-    group_id = Column(String(50), default=get_group)
-    tenant_id = Column(String(50), default=get_tenant)
-    create_user = Column(String(50), default=get_user_name)
-    create_group = Column(String(50), default=get_group_name)
+    user_id = Column(String(50), nullable=True, default=get_user, doc='用户ID')
+    group_id = Column(String(50), default=get_group, doc='部门ID')
+    tenant_id = Column(String(50), default=get_tenant, doc='租户ID')
+    create_user = Column(String(50), default=get_user_name, doc='创建用户')
+    create_group = Column(String(50), default=get_group_name, doc='创建部门')
 
 
 class SoftDeleteMixin(object):

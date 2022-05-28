@@ -11,7 +11,7 @@ variables:
   BACK_IMAGE_NAME: ${APP}_back:${CI_COMMIT_REF_NAME}
   APP_FULL: ${APP}_${CI_COMMIT_REF_NAME}
   DB_USER: chaozi
-  DB_PASSWORD: sdad12sac$!addQQ
+  DB_PASSWORD: Dream001$
   DB_HOST: db
   DB_NAME: chaozi
   DOCS_URI: "http://124.221.131.183:20101/apidocs.json"
