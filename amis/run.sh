@@ -1,0 +1,1 @@
+docker run -p 3000:80 --rm -v ${PWD}/default.conf:/etc/nginx/conf.d/default.conf -v ${PWD}:/app chaozi/nginx:alpine 

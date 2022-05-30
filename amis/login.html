@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <title>amis admin</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+  <link rel="stylesheet" title="default" href="/sdk/sdk.css" />
+  <link rel="stylesheet" href="/sdk/helper.css" />
+  <script src="/sdk/sdk.js"></script>
+  <script src="/sdk/history.js"></script>
+  <style>
+    html,
+    body,
+    .app-wrapper {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="root" class="app-wrapper"></div>
+  <script>
+    (function () {
+      let amis = amisRequire('amis/embed');
+      // 通过替换下面这个配置来生成不同页面
+      const login = {
+        "type": "page",
+        "style": {
+          "background": "url('/public/images/background.jpg') no-repeat center center",
+          "background-size": "cover",
+          "background-attachment": "fixed",
+          "background-color": "#fff"
+        },
+        "body": {
+          "type": "grid-2d",
+          "cols": 3,
+          "grids": [
+            {
+              "x": 2,
+              "y": 5,
+              "h": 1,
+              "w": 1,
+              "height": "auto",
+              "type": "form",
+              "mode": "horizontal",
+              "horizontal": {
+                "right": 10,
+                "offset": 2,
+                "justify": true,
+
+
+              },
+              // "wrapWithPanel": false,
+              "name": "login",
+              "title": "",
+              "submitText": "登录",
+              "panelClassName": "bg-none",
+              "api": {
+                "method": "post",
+                "url": "/api/login",
+                "adaptor": "console.log(payload)\n\n sessionStorage.setItem('token', payload.data.token)\n\nreturn {\n    \"a\":1\n}"
+              },
+              "messages": {
+                "fetchSuccess": "登录成功",
+                "fetchFailed": "用户名密码错误",
+                "saveSuccess": "登录成功11",
+                "saveFailed": "登录失败"
+              },
+              "redirect": '/index.html',
+              "body": [
+                {
+                  "type": "input-text",
+                  "name": "name",
+                  "label": "用户名："
+                },
+                {
+                  "name": "password",
+                  "type": "input-password",
+                  "label": "密码："
+                }
+              ]
+            }
+          ]
+        }
+      };
+
+      let amisScoped = amis.embed('#root',
+        login
+      );
+
+    })();
+  </script>
+</body>
+
+</html>
