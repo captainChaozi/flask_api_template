@@ -3,6 +3,9 @@ import sys
 
 from flask_restful import Api
 
+from app.api.login import (LoginApi,
+                           TestApi,
+                           ErrorAPI)
 from app.ext_init import docs
 from ext import BaseResource
 

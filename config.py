@@ -30,11 +30,11 @@ class Config:
     ALIPAY_AES = os.getenv('ALIPAY_AES', '')
 
     # sqlalchemy配置
-    user = os.getenv('DB_USER', 'postgres')
-    pwd = os.getenv('DB_PASSWORD', 'chaozi')
-    host = os.getenv('DB_HOST', 'localhost')
-    port = os.getenv('DB_PORT', '5432')
-    db = os.getenv('DB_NAME', 'postgres')
+    user = os.getenv('DB_USER', 'chaozi')
+    pwd = os.getenv('DB_PASSWORD', 'Dream001$')
+    host = os.getenv('DB_HOST', '124.221.131.183')
+    port = os.getenv('DB_PORT', '20103')
+    db = os.getenv('DB_NAME', 'chaozi')
     data = dict(user=user, pwd=pwd, host=host, port=port, db=db)
     con_str = 'postgresql+psycopg2://{user}:{pwd}@{host}:{port}/{db}'
     SQLALCHEMY_DATABASE_URI = os.getenv('DB_URL') or con_str.format(**data)
@@ -42,7 +42,7 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # redis 配置
-    REDIS_HOST = os.getenv('REDIS_HOST', 'localhost')
+    REDIS_HOST = os.getenv('REDIS_HOST', '127.0.0.1')
     REDIS_PORT = os.getenv('REDIS_PORT', '6379')
     REDIS_DB = os.getenv('REDIS_DB', 0)
     _redis_url = "redis://{host}:{port}/{db}". \

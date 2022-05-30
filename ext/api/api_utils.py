@@ -47,7 +47,7 @@ def check_param(value, _type):
     return value
 
 
-def param_query(models, param=None,like_fields=(), between_field=(), in_field=()):
+def param_query(models, param=None, like_fields=(), between_field=(), in_field=()):
     param = dict(param)
     param_list = []
     for model in models:
@@ -138,3 +138,10 @@ def get_required(model):
         if not column.nullable:
             res.append(name)
     return res
+
+
+def res_convert(data):
+    return {
+        "status": 0,
+        "msg": "",
+        "data": data}
