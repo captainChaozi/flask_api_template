@@ -31,7 +31,6 @@ services:
       - app_network
   api:
     build: .
-    image: ${API_IMAGE_NAME}
     restart: always
     environment:
       DB_HOST: ${DB_HOST}
@@ -50,8 +49,8 @@ services:
     networks:
       - app_network
   celery:
-    image: ${API_IMAGE_NAME}
     restart: always
+    build: .
     environment:
       DB_HOST: ${DB_HOST}
       DB_PORT: 5432
@@ -78,7 +77,6 @@ services:
     networks:
       - app_network
   nginx:
-    image: chaozi/amis:debug
     build: ./amis
     restart: always
     expose:

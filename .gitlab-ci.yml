@@ -35,7 +35,5 @@ deploy:
     PORT: 201
   script:
     #    - mkdir ${APP_FULL} && cp ./docker-compose.yml ./${APP_FULL} && cd ${APP_FULL}
-    - ls
-    - ls ./amis
     - docker-compose up -d
     - docker-compose restart nginx
