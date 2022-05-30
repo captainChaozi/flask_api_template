@@ -2,7 +2,7 @@ image: docker:latest
 
 
 stages:
-  - build
+  #  - build
   - deploy
 
 variables:
@@ -17,13 +17,13 @@ variables:
   DOCS_URI: "http://124.221.131.183:20101/apidocs.json"
 
 
-build:
-  stage: build
-  retry: 2
-  tags:
-    - chaozi
-  script:
-    - docker build -t ${API_IMAGE_NAME} .
+#build:
+#  stage: build
+#  retry: 2
+#  tags:
+#    - chaozi
+#  script:
+#    - docker build -t ${API_IMAGE_NAME} .
 
 deploy:
   image: tmaier/docker-compose
@@ -34,6 +34,6 @@ deploy:
   variables:
     PORT: 201
   script:
-    - mkdir ${APP_FULL} && cp ./docker-compose.yml ./${APP_FULL} && cd ${APP_FULL}
+    #    - mkdir ${APP_FULL} && cp ./docker-compose.yml ./${APP_FULL} && cd ${APP_FULL}
     - docker-compose up -d
     - docker-compose restart nginx
