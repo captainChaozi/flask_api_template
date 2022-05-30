@@ -1,1 +1,0 @@
-docker run -p 3000:80 --rm  -v ${PWD}:/app -v  ${PWD}:/app/amis-editor-demo chaozi/amis:debug
