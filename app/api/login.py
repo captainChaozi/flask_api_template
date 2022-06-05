@@ -1,3 +1,5 @@
+import json
+
 from app.ext_init import docs
 from ext import BaseResource, res_convert
 
@@ -37,3 +39,17 @@ class ErrorAPI(BaseResource):
             "data": {
             }
         }
+
+
+class SaveAPI(BaseResource):
+    uri = '/save'
+
+    def get(self):
+        with open('./pages/api.json', 'r') as f:
+            d = json.load(f)
+        return d
+
+    def put(self):
+        print(self.data)
+
+        return {"status": 'ok'}
